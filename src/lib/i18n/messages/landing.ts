@@ -79,7 +79,7 @@ export const landingMessages = defineMessages({
     p3Title: "Keine Datenbank",
     p3Text: "Wir speichern nichts. Es gibt schlicht keinen Ort dafür.",
     p4Title: "Nur das Nötigste an die KI",
-    p4Text: "Nur Händlernamen und Beträge – nie IBAN, Name oder Kontostand.",
+    p4Text: "Im Wesentlichen Händlernamen und Beträge. IBAN, Name und Adresse entfernen wir vorher.",
     p5Title: "Tab zu, alles weg",
     p5Text: "Schliesst du das Fenster, ist deine Auswertung verschwunden.",
     aiSeesTitle: "Was die KI zu sehen bekommt",
@@ -87,7 +87,6 @@ export const landingMessages = defineMessages({
     aiSeesKept: "bleibt bei dir",
     aiSeesName: "Dein Name",
     aiSeesIban: "IBAN",
-    aiSeesBalance: "Kontostand",
     aiSeesAddress: "Adresse",
 
     // Banks & formats
@@ -117,7 +116,7 @@ export const landingMessages = defineMessages({
       "Bekannte Schweizer Händler erkennt Räppli per Regel – das sitzt. Unbekannte ordnet die KI zu, und die liegt meistens richtig, aber nicht immer. Wirf deshalb einen kurzen Blick auf deine grössten Posten.",
     faq5Q: "Welche KI steckt dahinter?",
     faq5A:
-      "Ein grosses Sprachmodell hilft bei unbekannten Händlern und schreibt die Tipps. Es bekommt nur Händlernamen und Beträge, nie deine IBAN, deinen Namen oder deinen Kontostand.",
+      "Ein grosses Sprachmodell hilft bei unbekannten Händlern und schreibt die Tipps. Es bekommt im Wesentlichen Händlernamen und Beträge. Bei PDF-Auszügen geht der Text an die KI, nachdem IBAN, Kartennummern, Name und Adresse entfernt wurden – Saldozeilen können darin noch vorkommen.",
     faq6Q: "Wie exportiere ich meinen Kontoauszug?",
     faq6A: "Meist im E-Banking unter Konto → Bewegungen → Export. Ein paar Wegweiser:",
     exportUbs: "E-Banking → Konto → Transaktionen → Export als CSV",
@@ -203,7 +202,7 @@ export const landingMessages = defineMessages({
     p3Title: "Pas de base de données",
     p3Text: "Nous ne stockons rien. Il n'y a tout simplement aucun endroit pour ça.",
     p4Title: "Le strict minimum pour l'IA",
-    p4Text: "Seulement des noms de commerçants et des montants – jamais d'IBAN, de nom ni de solde.",
+    p4Text: "Surtout des noms de commerçants et des montants. Nous retirons l'IBAN, le nom et l'adresse avant l'envoi.",
     p5Title: "Onglet fermé, tout disparaît",
     p5Text: "Ferme la fenêtre et ton analyse s'efface.",
     aiSeesTitle: "Ce que l'IA voit",
@@ -211,7 +210,6 @@ export const landingMessages = defineMessages({
     aiSeesKept: "reste chez toi",
     aiSeesName: "Ton nom",
     aiSeesIban: "IBAN",
-    aiSeesBalance: "Solde",
     aiSeesAddress: "Adresse",
 
     banksTitle: "Fonctionne avec ta banque.",
@@ -239,7 +237,7 @@ export const landingMessages = defineMessages({
       "Les commerçants suisses connus sont reconnus par des règles – c'est fiable. Les inconnus sont classés par l'IA, qui a généralement raison, mais pas toujours. Jette donc un œil à tes plus gros postes.",
     faq5Q: "Quelle IA se cache derrière ?",
     faq5A:
-      "Un grand modèle de langage aide pour les commerçants inconnus et rédige les conseils. Il ne reçoit que des noms de commerçants et des montants, jamais ton IBAN, ton nom ou ton solde.",
+      "Un grand modèle de langage aide pour les commerçants inconnus et rédige les conseils. Il reçoit surtout des noms de commerçants et des montants. Pour les relevés PDF, le texte est envoyé après suppression de l'IBAN, des numéros de carte, du nom et de l'adresse ; des lignes de solde peuvent encore y figurer.",
     faq6Q: "Comment exporter mon relevé ?",
     faq6A: "En général dans l'e-banking sous Compte → Mouvements → Exporter. Quelques repères :",
     exportUbs: "E-Banking → Compte → Transactions → Export CSV",
@@ -324,7 +322,7 @@ export const landingMessages = defineMessages({
     p3Title: "Nessun database",
     p3Text: "Non salviamo nulla. Semplicemente non c'è un posto per farlo.",
     p4Title: "All'IA solo lo stretto necessario",
-    p4Text: "Solo nomi dei commercianti e importi – mai IBAN, nome o saldo.",
+    p4Text: "Soprattutto nomi dei commercianti e importi. IBAN, nome e indirizzo li rimuoviamo prima.",
     p5Title: "Chiudi la scheda, tutto sparisce",
     p5Text: "Chiudi la finestra e la tua analisi non c'è più.",
     aiSeesTitle: "Cosa vede l'IA",
@@ -332,7 +330,6 @@ export const landingMessages = defineMessages({
     aiSeesKept: "resta a te",
     aiSeesName: "Il tuo nome",
     aiSeesIban: "IBAN",
-    aiSeesBalance: "Saldo",
     aiSeesAddress: "Indirizzo",
 
     banksTitle: "Funziona con la tua banca.",
@@ -360,7 +357,7 @@ export const landingMessages = defineMessages({
       "I commercianti svizzeri noti vengono riconosciuti con regole fisse – e lì non si sbaglia. Quelli sconosciuti li assegna l'IA, che di solito ci azzecca, ma non sempre. Dai quindi un'occhiata alle voci più grandi.",
     faq5Q: "Che IA c'è dietro?",
     faq5A:
-      "Un grande modello linguistico aiuta con i commercianti sconosciuti e scrive i consigli. Riceve solo nomi dei commercianti e importi, mai il tuo IBAN, il tuo nome o il tuo saldo.",
+      "Un grande modello linguistico aiuta con i commercianti sconosciuti e scrive i consigli. Riceve soprattutto nomi dei commercianti e importi. Per gli estratti PDF il testo viene inviato dopo aver rimosso IBAN, numeri di carta, nome e indirizzo; possono restarci righe di saldo.",
     faq6Q: "Come esporto il mio estratto conto?",
     faq6A: "Di solito nell'e-banking sotto Conto → Movimenti → Esporta. Qualche indicazione:",
     exportUbs: "E-Banking → Conto → Transazioni → Export CSV",
@@ -445,7 +442,7 @@ export const landingMessages = defineMessages({
     p3Title: "No database",
     p3Text: "We don't store anything. There's simply nowhere to put it.",
     p4Title: "Only the bare minimum goes to AI",
-    p4Text: "Only merchant names and amounts – never your IBAN, name or balance.",
+    p4Text: "Mostly merchant names and amounts. Your IBAN, name and address are removed first.",
     p5Title: "Close the tab, it's gone",
     p5Text: "Close the window and your analysis disappears.",
     aiSeesTitle: "What the AI gets to see",
@@ -453,7 +450,6 @@ export const landingMessages = defineMessages({
     aiSeesKept: "stays with you",
     aiSeesName: "Your name",
     aiSeesIban: "IBAN",
-    aiSeesBalance: "Balance",
     aiSeesAddress: "Address",
 
     banksTitle: "Works with your bank.",
@@ -481,7 +477,7 @@ export const landingMessages = defineMessages({
       "Well-known Swiss merchants are matched by rules – those are spot on. Unknown ones are sorted by AI, which is usually right, but not always. So take a quick look at your biggest items.",
     faq5Q: "Which AI is behind it?",
     faq5A:
-      "A large language model helps with unknown merchants and writes the tips. It only receives merchant names and amounts, never your IBAN, name or balance.",
+      "A large language model helps with unknown merchants and writes the tips. It mostly receives merchant names and amounts. For PDF statements, the text is sent after your IBAN, card numbers, name and address are removed; balance lines may still be in it.",
     faq6Q: "How do I export my statement?",
     faq6A: "Usually in e-banking under Account → Transactions → Export. A few pointers:",
     exportUbs: "E-Banking → Account → Transactions → Export as CSV",
