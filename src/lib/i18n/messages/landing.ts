@@ -8,7 +8,7 @@ export const landingMessages = defineMessages({
     // Hero
     heroTitle: "Wo sind all die Räppli hin?",
     heroLead:
-      "Lade deinen Kontoauszug hoch und sieh in Sekunden, wohin dein Geld fliesst. Mit Budget-Score, ehrlicher Kritik und Spartipps – ganz ohne Login.",
+      "Lade deinen Kontoauszug hoch und sieh in Sekunden, wohin dein Geld fliesst. Mit Budget-Bewertung, ehrlicher Kritik und Spartipps – ganz ohne Login.",
     ctaUpload: "Kontoauszug hochladen",
     ctaSample: "Mit Beispieldaten testen",
     badgeNoLogin: "Kein Login",
@@ -19,7 +19,7 @@ export const landingMessages = defineMessages({
     // Phone mockup
     mockGreeting: "Hoi! Das war dein Oktober.",
     mockSpent: "ausgegeben",
-    mockScore: "Budget-Score",
+    mockScore: "Budget-Bewertung",
     mockPersona: "Sparfuchs",
     mockSaving: "Sparpotenzial",
     mockPerMonth: "pro Monat",
@@ -39,13 +39,13 @@ export const landingMessages = defineMessages({
       "Migros wird Lebensmittel, SBB wird ÖV, Netflix wird Abo. Händler, die Räppli nicht kennt, ordnet die KI zu.",
     step3Title: "Tipps erhalten",
     step3Text:
-      "Du siehst, wohin dein Geld fliesst, bekommst deinen Budget-Score und konkrete Ideen, wo du sparen kannst.",
+      "Du siehst, wohin dein Geld fliesst, bekommst deine Budget-Bewertung und konkrete Ideen, wo du sparen kannst.",
 
     // Features
     featuresTitle: "Alles, was dein Konto dir verschweigt.",
     fCatTitle: "Automatisch kategorisiert",
     fChartsTitle: "Charts, die man versteht",
-    fScoreTitle: "Budget-Score & Typ",
+    fScoreTitle: "Budget-Bewertung & Typ",
     fScoreText: "Ein Wert von 0 bis 100 und ein Spar-Typ, der zu dir passt.",
     fSwTitle: "Stärken & Schwächen",
     fSwStrength1: "Miete im grünen Bereich",

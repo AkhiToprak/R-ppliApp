@@ -6,7 +6,7 @@ const de = {
   // Upload
   uploadTitle: "Wohin rollen deine Räppli?",
   uploadLead:
-    "Lade deinen Kontoauszug hoch und sieh in Sekunden, wofür dein Geld draufgeht – mit Budget-Score, ehrlicher Kritik und konkreten Sparideen.",
+    "Lade deinen Kontoauszug hoch und sieh in Sekunden, wofür dein Geld draufgeht – mit Budget-Bewertung, ehrlicher Kritik und konkreten Sparideen.",
   dropTitle: "Kontoauszug hierher ziehen",
   dropActive: "Loslassen – Räppli übernimmt!",
   dropBrowse: "Datei auswählen",
@@ -76,9 +76,9 @@ const de = {
   kpiDailyHint: "Ø Ausgaben pro Kalendertag",
 
   // Score
-  scoreTitle: "Budget-Score",
+  scoreTitle: "Budget-Bewertung",
   scoreOutOf: "von 100",
-  scoreAria: "Budget-Score: {score} von 100",
+  scoreAria: "Budget-Bewertung: {score} von 100",
   thinking: "Räppli denkt nach …",
   translating: "Räppli übersetzt …",
   translateFailed: "Übersetzung fehlgeschlagen – die Tipps sind noch in der Originalsprache.",
@@ -162,7 +162,7 @@ const de = {
 
   // Disclaimer
   disclaimer:
-    "Räppli verschafft dir einen Überblick und ist keine Finanzberatung. Kategorien, Score und Tipps entstehen automatisch und können danebenliegen – prüf wichtige Entscheide selbst oder hol dir eine Fachperson dazu.",
+    "Räppli verschafft dir einen Überblick und ist keine Finanzberatung. Kategorien, Bewertung und Tipps entstehen automatisch und können danebenliegen – prüf wichtige Entscheide selbst oder hol dir eine Fachperson dazu.",
 } as const;
 
 const fr = {

@@ -3,6 +3,7 @@
 
 import { z } from "zod";
 import { CATEGORIES } from "@/lib/categories";
+import { personaIn } from "./fallback-insights";
 import {
   CATEGORY_IDS,
   type Analysis,
@@ -374,7 +375,7 @@ export function applyTranslation(original: Insights, out: TranslationOutput, loc
   const item = <T extends InsightItem>(orig: T, t: InsightItem): T => ({ ...orig, title: fix(t.title), detail: fix(t.detail) });
   return {
     ...original,
-    persona: fix(out.persona),
+    persona: personaIn(original.persona, locale) ?? fix(out.persona),
     personaText: fix(out.personaText),
     strengths: original.strengths.map((s, i) => item(s, out.strengths[i])),
     weaknesses: original.weaknesses.map((w, i) => item(w, out.weaknesses[i])),

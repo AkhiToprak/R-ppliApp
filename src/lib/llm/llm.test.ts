@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { Analysis, Insights, Locale } from "@/lib/types";
 import { analyse } from "@/lib/analysis";
 import { buildFallbackInsights, fallbackScore } from "./fallback-insights";
-import { insightsUserPrompt } from "./prompts";
+import { insightsUserPrompt, translateSystemPrompt } from "./prompts";
 import { extractJSON, repairTruncatedJSON } from "./json";
 import { chatJSON, LLMUnavailableError } from "./openrouter";
 import { createRateLimiter } from "./rate-limit";
@@ -297,6 +297,19 @@ describe("insights translation", () => {
     expect(result.source).toBe("llm");
     expect(result.critiques[0]).toEqual({ ...original.critiques[0], title: "Ordering food", detail: "12 orders.", suggestion: "Cook twice more." });
     expect(result.savings[0]).toMatchObject({ title: "Clear out subscriptions", monthlySaving: 30, effort: "easy" });
+  });
+
+  it("maps a known persona to its counterpart instead of a literal translation", () => {
+    const en = { ...original, persona: "Thrifty fox" };
+    const out = translationOutputSchema(en).parse({ ...translated, persona: "Sparsamer Fuchs" });
+    expect(applyTranslation(en, out, "de").persona).toBe("Sparfuchs");
+    expect(applyTranslation({ ...original, persona: "Genussmensch" }, out, "fr").persona).toBe("Épicurien");
+    // Unknown personas keep the model's translation.
+    expect(applyTranslation({ ...original, persona: "Velo-Pendler" }, out, "de").persona).toBe("Sparsamer Fuchs");
+  });
+
+  it("lists the persona equivalents in the translation prompt", () => {
+    expect(translateSystemPrompt("de")).toContain("Sparfuchs = Fourmi prévoyante = Formica previdente = Thrifty fox");
   });
 
   it("rejects output that drops or adds items", () => {

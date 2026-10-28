@@ -434,6 +434,26 @@ const en: Dict = {
 
 const DICTS: Record<Locale, Dict> = { de, fr, it, en };
 
+const PERSONAS = Object.keys(de.persona) as Persona[];
+
+/**
+ * The same persona in `locale`, if `label` is one of Räppli's personas in any language:
+ * "Thrifty fox" → "Sparfuchs". Personas are idioms, so a literal translation would miss.
+ */
+export function personaIn(label: string, locale: Locale): string | undefined {
+  const key = label.trim().toLowerCase();
+  for (const dict of Object.values(DICTS)) {
+    const persona = PERSONAS.find((p) => dict.persona[p].toLowerCase() === key);
+    if (persona) return DICTS[locale].persona[persona];
+  }
+  return undefined;
+}
+
+/** Every persona with its labels in all languages, e.g. `{ de: "Sparfuchs", fr: …, it: …, en: "Thrifty fox" }`. */
+export function personaEquivalents(): Record<Locale, string>[] {
+  return PERSONAS.filter((p) => p !== "empty").map((p) => ({ de: de.persona[p], fr: fr.persona[p], it: it.persona[p], en: en.persona[p] }));
+}
+
 // ---- metrics -------------------------------------------------------------------
 
 interface CatStat {
