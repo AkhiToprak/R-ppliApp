@@ -75,8 +75,10 @@ export interface CategoryTotal {
   count: number;
   /** Share of total spending, 0..1 (0 for non-spending categories). */
   share: number;
-  /** Average per month over the statement period. */
+  /** Average per month over the statement period (not meaningful when `isSingleMonth`). */
   monthlyAverage: number;
+  /** Distinct calendar months with at least one booking that adds to the total. */
+  months: number;
 }
 
 export interface MonthlySummary {
@@ -95,6 +97,8 @@ export interface MerchantTotal {
   category: CategoryId;
   total: number;
   count: number;
+  /** Distinct calendar months with at least one purchase (1 = one-off, not a monthly cost). */
+  months: number;
 }
 
 export interface RecurringPayment {
@@ -194,4 +198,18 @@ export interface ExtractResponse {
   transactions: Omit<Transaction, "id" | "category" | "categorySource">[];
   currency: string;
   bank?: string;
+}
+
+/**
+ * Seen in only one calendar month of a multi-month statement (a hotel stay, a
+ * yearly bill): a per-month average would invent a cost that doesn't recur, so
+ * show the actual amount instead.
+ */
+export function isSingleMonth(item: { months: number }, analysis: Pick<Analysis, "byMonth">): boolean {
+  return analysis.byMonth.length > 1 && item.months < 2;
+}
+
+/** First month (YYYY-MM) with spending in `category`; for single-month categories, the only one. */
+export function firstMonthOf(category: CategoryId, analysis: Pick<Analysis, "byMonth">): string | undefined {
+  return analysis.byMonth.find((m) => (m.byCategory[category] ?? 0) > 0)?.month;
 }

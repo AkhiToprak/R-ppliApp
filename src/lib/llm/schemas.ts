@@ -136,6 +136,7 @@ export const analysisSchema = z.object({
         count: z.number().finite(),
         share: z.number().finite(),
         monthlyAverage: money,
+        months: z.number().finite(),
       }),
     )
     .max(60),
@@ -151,7 +152,9 @@ export const analysisSchema = z.object({
     )
     .max(240),
   topMerchants: z
-    .array(z.object({ name: z.string().max(300), category: categoryId, total: money, count: z.number().finite() }))
+    .array(
+      z.object({ name: z.string().max(300), category: categoryId, total: money, count: z.number().finite(), months: z.number().finite() }),
+    )
     .max(100),
   recurring: z
     .array(

@@ -65,18 +65,19 @@ export class MerchantNaming {
 export function topMerchants(entries: Entry[], limit = 10): MerchantTotal[] {
   const groups = new Map<
     string,
-    { naming: MerchantNaming; net: number; count: number }
+    { naming: MerchantNaming; net: number; count: number; months: Set<string> }
   >();
   for (const e of entries) {
     const key = merchantKey(e.tx);
     let g = groups.get(key);
     if (!g) {
-      g = { naming: new MerchantNaming(), net: 0, count: 0 };
+      g = { naming: new MerchantNaming(), net: 0, count: 0, months: new Set() };
       groups.set(key, g);
     }
     g.net += -e.tx.amount;
     if (e.tx.amount < 0) {
       g.count += 1;
+      g.months.add(e.month);
       g.naming.add(e.tx, e.cat);
     }
   }
@@ -88,6 +89,7 @@ export function topMerchants(entries: Entry[], limit = 10): MerchantTotal[] {
       category: g.naming.category,
       total: round2(g.net),
       count: g.count,
+      months: g.months.size,
     });
   }
   list.sort((a, b) => b.total - a.total || a.name.localeCompare(b.name));
