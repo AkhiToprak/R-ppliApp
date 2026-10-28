@@ -6,7 +6,7 @@
 - **Categorisation:** 300+ Swiss merchant rules (Migros → groceries, SBB → public transport, CSS → insurance …), with an LLM via OpenRouter for everything the rules don't know
 - **Insights:** budget score and persona, strengths and weaknesses, specific critique of spending points, and saving options with CHF estimates (LLM, with a rule-based fallback)
 - **Languages:** Deutsch, Français, Italiano, English, detected from the browser's `Accept-Language`
-- **Privacy:** parsing, categorisation rules and analysis run in the browser. Only anonymised merchant names and aggregated totals are sent to the LLM. There is no database, no cookies and no storage, so closing the tab erases everything.
+- **Privacy:** parsing, categorisation rules and analysis run in the browser. Only merchant names and amounts are sent to the LLM, never names, IBANs or addresses. There is no database, no cookies and no storage, so closing the tab erases everything.
 
 ## Getting started
 

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Check, TriangleAlert } from "lucide-react";
 import type { CategoryId, Locale } from "@/lib/types";
 import { CATEGORIES } from "@/lib/categories";
+import { CategoryIcon } from "@/components/analyse/ui";
 import { formatMoney } from "@/lib/i18n/core";
 import { RappliCoin } from "@/components/brand/RappliCoin";
 import { CountUp } from "./CountUp";
@@ -46,7 +47,9 @@ export function CategoriseIllo({ locale }: { locale: Locale }) {
               animate={play ? { opacity: 1, x: 0, scale: 1 } : undefined}
               transition={{ type: "spring", stiffness: 320, damping: 20, delay: 0.25 + i * 0.22 }}
             >
-              <span className="grid size-6 place-items-center rounded-full bg-paper text-xs">{meta.emoji}</span>
+              <span className="grid size-6 place-items-center rounded-full bg-paper">
+                <CategoryIcon id={cat} size={13} />
+              </span>
               {meta.label[locale]}
             </motion.span>
           </div>
@@ -109,29 +112,31 @@ export function ChartsIllo({ locale }: { locale: Locale }) {
 export function ScoreIllo({ locale, persona }: { locale: Locale; persona: string }) {
   const { ref, play, reduce } = useOnScreen();
   return (
-    <div ref={ref} aria-hidden className="relative mx-auto w-full max-w-[260px]">
-      <svg viewBox="0 0 200 112" className="w-full overflow-visible">
-        <defs>
-          <linearGradient id="score-grad" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0" stopColor="var(--color-pink)" />
-            <stop offset="0.5" stopColor="var(--color-sun)" />
-            <stop offset="1" stopColor="var(--color-mint)" />
-          </linearGradient>
-        </defs>
-        <path d="M 16 100 A 84 84 0 0 1 184 100" fill="none" stroke="rgb(11 11 15 / 0.08)" strokeWidth="18" strokeLinecap="round" />
-        <motion.path
-          d="M 16 100 A 84 84 0 0 1 184 100"
-          fill="none"
-          stroke="url(#score-grad)"
-          strokeWidth="18"
-          strokeLinecap="round"
-          initial={reduce ? false : { pathLength: 0 }}
-          animate={play ? { pathLength: 0.72 } : undefined}
-          transition={{ duration: 1.4, delay: 0.2, ease: EASE }}
-        />
-      </svg>
-      <div className="absolute inset-x-0 bottom-0 text-center">
-        <CountUp value={72} locale={locale} delay={0.2} className="font-display text-6xl leading-none font-extrabold tracking-[-0.05em]" />
+    <div ref={ref} aria-hidden className="mx-auto w-full max-w-[260px]">
+      <div className="relative">
+        <svg viewBox="0 0 200 112" className="w-full overflow-visible">
+          <defs>
+            <linearGradient id="score-grad" x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0" stopColor="var(--color-pink)" />
+              <stop offset="0.5" stopColor="var(--color-sun)" />
+              <stop offset="1" stopColor="var(--color-mint)" />
+            </linearGradient>
+          </defs>
+          <path d="M 16 100 A 84 84 0 0 1 184 100" fill="none" stroke="rgb(11 11 15 / 0.08)" strokeWidth="18" strokeLinecap="round" />
+          <motion.path
+            d="M 16 100 A 84 84 0 0 1 184 100"
+            fill="none"
+            stroke="url(#score-grad)"
+            strokeWidth="18"
+            strokeLinecap="round"
+            initial={reduce ? false : { pathLength: 0 }}
+            animate={play ? { pathLength: 0.72 } : undefined}
+            transition={{ duration: 1.4, delay: 0.2, ease: EASE }}
+          />
+        </svg>
+        <div className="absolute inset-x-0 bottom-0 text-center">
+          <CountUp value={72} locale={locale} delay={0.2} className="font-display text-6xl leading-none font-extrabold tracking-[-0.05em]" />
+        </div>
       </div>
       <motion.p
         className="mx-auto mt-4 w-fit rounded-full bg-ink px-4 py-1.5 text-sm font-bold text-paper"

@@ -4,6 +4,7 @@ import { motion, useInView, useReducedMotion } from "motion/react";
 import { useRef } from "react";
 import type { CategoryId, Locale } from "@/lib/types";
 import { CATEGORIES } from "@/lib/categories";
+import { CategoryIcon } from "@/components/analyse/ui";
 import { formatMoney } from "@/lib/i18n/core";
 import { CountUp } from "./CountUp";
 
@@ -99,8 +100,8 @@ export function PhoneMockup({ locale, labels }: { locale: Locale; labels: PhoneL
             return (
               <li key={cat} className="text-[0.7rem]">
                 <div className="flex items-center gap-2">
-                  <span className="grid size-5 shrink-0 place-items-center rounded-full text-[0.6rem]" style={{ background: `${meta.color}26` }}>
-                    {meta.emoji}
+                  <span className="grid size-5 shrink-0 place-items-center rounded-full" style={{ background: `${meta.color}26` }}>
+                    <CategoryIcon id={cat} size={11} />
                   </span>
                   <span className="min-w-0 flex-1 truncate font-semibold">{meta.label[locale]}</span>
                   <span className="font-bold tabular-nums">{formatMoney(s.amount, locale, { decimals: 0 })}</span>
