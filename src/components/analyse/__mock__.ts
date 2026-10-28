@@ -87,10 +87,9 @@ export const mockAnalysis: Analysis = {
 };
 
 export const mockInsights: Insights = {
-  summary:
-    "Du verdienst solide und legst jeden Monat etwas zur Seite. Die Wohnkosten fressen aber fast 40 % deiner Ausgaben, und am Wochenende rollen die Räppli besonders schnell.",
   score: 78,
   persona: "Sparfuchs mit Ausgehlaune",
+  personaText: "Du legst regelmässig etwas zur Seite, gönnst dir aber auch gerne einen Abend auswärts.",
   strengths: [
     { title: "Regelmässig gespart", detail: "Jeden Monat gehen CHF 800 aufs Sparkonto – das ist eine Sparquote von über 25 %." },
     { title: "Fixkosten im Griff", detail: "Handy und Streaming kosten zusammen unter CHF 110 pro Monat." },

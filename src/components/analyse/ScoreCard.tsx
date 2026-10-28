@@ -100,7 +100,7 @@ export function ScoreCard({
         {insights ? (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.6, ease: EASE_OUT }}>
             <p className="font-display text-3xl leading-tight font-extrabold text-rainbow sm:text-4xl">{insights.persona}</p>
-            <p className="mx-auto mt-3 max-w-md text-[0.95rem] leading-relaxed text-paper/75">{insights.summary}</p>
+            <p className="mx-auto mt-3 max-w-md text-[0.95rem] leading-relaxed text-paper/75">{insights.personaText}</p>
           </motion.div>
         ) : loading ? (
           <div className="mx-auto max-w-sm space-y-2.5">
