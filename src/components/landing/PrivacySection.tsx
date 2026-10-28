@@ -27,7 +27,6 @@ export function PrivacySection({ locale, t }: { locale: Locale; t: LandingT }) {
       className="relative isolate scroll-mt-20 overflow-hidden bg-ink py-24 text-paper sm:py-32 lg:py-40"
     >
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-40 -left-40 size-[40rem] rounded-full bg-[radial-gradient(closest-side,rgb(123_92_255/0.35),transparent)]" />
         <div className="absolute -right-40 bottom-0 size-[36rem] rounded-full bg-[radial-gradient(closest-side,rgb(25_211_162/0.22),transparent)]" />
       </div>
 
