@@ -18,7 +18,7 @@ export function PrivacySection({ locale, t }: { locale: Locale; t: LandingT }) {
     ["Migros", 742],
     ["Swisscom", 69],
   ] as const;
-  const kept = [t("aiSeesName"), t("aiSeesIban"), t("aiSeesBalance"), t("aiSeesAddress")];
+  const kept = [t("aiSeesName"), t("aiSeesIban"), t("aiSeesAddress")];
 
   return (
     <section
