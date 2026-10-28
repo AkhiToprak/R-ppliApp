@@ -4,6 +4,7 @@ import { buildFallbackInsights } from "./fallback-insights";
 // Browser-side wrappers around the API routes. Must NOT import ./openrouter (server-only).
 
 const INSIGHTS_TIMEOUT_MS = 40_000;
+const TRANSLATE_TIMEOUT_MS = 40_000;
 const EXTRACT_TIMEOUT_MS = 95_000;
 
 function isInsights(v: unknown): v is Insights {
@@ -45,6 +46,21 @@ export async function fetchInsights(analysis: Analysis, locale: Locale): Promise
     // network error, timeout, invalid JSON → fall through to local fallback
   }
   return buildFallbackInsights(analysis, locale);
+}
+
+// Translates model insights into `locale` (texts only). Throws on failure; the caller keeps the original.
+export async function translateInsights(insights: Insights, locale: Locale): Promise<Insights> {
+  const res = await fetch("/api/translate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ locale, insights }),
+    signal: AbortSignal.timeout(TRANSLATE_TIMEOUT_MS),
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(`translation failed: status ${res.status}`);
+  const data: unknown = await res.json();
+  if (!isInsights(data)) throw new Error("translation failed: invalid response");
+  return data;
 }
 
 // Sends redacted PDF text to /api/extract. Throws Error("pdf_extraction_failed") on failure.

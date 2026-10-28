@@ -1,4 +1,4 @@
-import type { Analysis, Insights, ParseResult, Transaction } from "@/lib/types";
+import type { Analysis, Insights, Locale, ParseResult, Transaction } from "@/lib/types";
 
 /* ---------------------------------------------------------------- errors */
 
@@ -37,10 +37,20 @@ export interface DashboardState {
   analysis: Analysis;
   /** Bumped on every local re-analysis (recategorisation). */
   version: number;
-  insights: Insights | null;
+  /**
+   * Insights per language. The first entry is the original (generated in the language active at
+   * the time); other languages are translated from it lazily, when the user switches to them.
+   */
+  insights: Partial<Record<Locale, Insights>>;
   insightsLoading: boolean;
   /** Version of the analysis the current insights were computed from. */
   insightsVersion: number;
+  /** Analysis the current insights were computed from (fallback insights are rebuilt from it per language). */
+  insightsAnalysis: Analysis | null;
+  /** Bumped for every new set of insights, so late translations of an older set are dropped. */
+  insightsId: number;
+  translating: Locale[];
+  translationFailed: Locale[];
 }
 
 export type State =
@@ -57,7 +67,11 @@ export type Action =
   | { type: "ready"; meta: StatementMeta; transactions: Transaction[]; analysis: Analysis }
   | { type: "insightsLoading" }
   | { type: "insightsFailed" }
-  | { type: "insights"; insights: Insights; version: number }
+  | { type: "insights"; insights: Insights; locale: Locale; version: number; analysis: Analysis }
+  | { type: "translating"; locale: Locale }
+  | { type: "translated"; locale: Locale; insights: Insights; id: number }
+  | { type: "translationFailed"; locale: Locale; id: number }
+  | { type: "retryTranslation"; locale: Locale }
   | { type: "recategorised"; transactions: Transaction[]; analysis: Analysis }
   | { type: "reset" };
 
@@ -80,9 +94,13 @@ export function reducer(state: State, action: Action): State {
         transactions: action.transactions,
         analysis: action.analysis,
         version: 0,
-        insights: null,
+        insights: {},
         insightsLoading: true,
         insightsVersion: 0,
+        insightsAnalysis: null,
+        insightsId: 0,
+        translating: [],
+        translationFailed: [],
       };
     case "insightsLoading":
       return state.phase === "dashboard" ? { ...state, insightsLoading: true } : state;
@@ -90,7 +108,40 @@ export function reducer(state: State, action: Action): State {
       return state.phase === "dashboard" ? { ...state, insightsLoading: false } : state;
     case "insights":
       return state.phase === "dashboard"
-        ? { ...state, insights: action.insights, insightsLoading: false, insightsVersion: action.version }
+        ? {
+            ...state,
+            insights: { [action.locale]: action.insights },
+            insightsLoading: false,
+            insightsVersion: action.version,
+            insightsAnalysis: action.analysis,
+            insightsId: state.insightsId + 1,
+            translating: [],
+            translationFailed: [],
+          }
+        : state;
+    case "translating":
+      return state.phase === "dashboard" && !state.translating.includes(action.locale)
+        ? { ...state, translating: [...state.translating, action.locale] }
+        : state;
+    case "translated":
+      return state.phase === "dashboard" && state.insightsId === action.id
+        ? {
+            ...state,
+            insights: { ...state.insights, [action.locale]: action.insights },
+            translating: state.translating.filter((l) => l !== action.locale),
+          }
+        : state;
+    case "translationFailed":
+      return state.phase === "dashboard" && state.insightsId === action.id
+        ? {
+            ...state,
+            translating: state.translating.filter((l) => l !== action.locale),
+            translationFailed: [...state.translationFailed, action.locale],
+          }
+        : state;
+    case "retryTranslation":
+      return state.phase === "dashboard"
+        ? { ...state, translationFailed: state.translationFailed.filter((l) => l !== action.locale) }
         : state;
     case "recategorised":
       return state.phase === "dashboard"
@@ -99,6 +150,27 @@ export function reducer(state: State, action: Action): State {
     case "reset":
       return initialState;
   }
+}
+
+/* ---------------------------------------------------------------- insights per language */
+
+/** The original insights and their language, i.e. what other languages are translated from. */
+export function originalInsights(state: DashboardState): { locale: Locale; insights: Insights } | null {
+  const locale = (Object.keys(state.insights) as Locale[])[0];
+  const insights = locale && state.insights[locale];
+  return insights ? { locale, insights } : null;
+}
+
+/**
+ * What to show in `locale`: its own insights, or — until the translation arrives — the original
+ * ones, whose texts the UI renders as "translating" skeletons.
+ */
+export function insightsIn(state: DashboardState, locale: Locale) {
+  const own = state.insights[locale];
+  if (own) return { insights: own, translating: false, translationFailed: false };
+  const original = originalInsights(state);
+  const failed = state.translationFailed.includes(locale);
+  return { insights: original?.insights ?? null, translating: !!original && !failed, translationFailed: !!original && failed };
 }
 
 /* ---------------------------------------------------------------- merchants */

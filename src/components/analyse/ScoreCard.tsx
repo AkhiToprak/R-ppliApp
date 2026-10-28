@@ -9,7 +9,7 @@ import { useT } from "@/lib/i18n/client";
 import { analyseMessages } from "@/lib/i18n/messages/analyse";
 import type { Insights } from "@/lib/types";
 import { Spinner } from "./Spinner";
-import { CountUp, EASE_OUT, Skeleton } from "./ui";
+import { CountUp, EASE_OUT, Skeleton, Translating, Tx } from "./ui";
 
 // 270° arc, open at the bottom: from 135° (bottom-left) clockwise to 45° (bottom-right).
 const ARC = "M 43.43 156.57 A 80 80 0 1 1 156.57 156.57";
@@ -18,10 +18,13 @@ const CELEBRATE_FROM = 75;
 export function ScoreCard({
   insights,
   loading,
+  translating = false,
   className,
 }: {
   insights: Insights | null;
   loading: boolean;
+  /** The insights are the original language's, their texts are being translated. */
+  translating?: boolean;
   className?: string;
 }) {
   const t = useT(analyseMessages);
@@ -31,7 +34,7 @@ export function ScoreCard({
   return (
     <section
       aria-labelledby="score-title"
-      aria-busy={loading}
+      aria-busy={loading || translating}
       className={clsx("relative isolate overflow-hidden rounded-[2rem] bg-ink p-6 text-paper sm:p-8", className)}
     >
 
@@ -39,7 +42,9 @@ export function ScoreCard({
         <h2 id="score-title" className="text-sm font-semibold text-paper/70">
           {t("scoreTitle")}
         </h2>
-        {insights?.source === "fallback" && (
+        {translating ? (
+          <TranslatingBadge label={t("translating")} />
+        ) : insights?.source === "fallback" && (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-paper/10 px-3 py-1 text-xs font-semibold text-paper/85">
             <Sparkles size={12} aria-hidden className="opacity-60" />
             {t("fallbackBadge")}
@@ -99,8 +104,15 @@ export function ScoreCard({
       <div className="mt-2 min-h-[6.5rem] text-center" aria-live="polite">
         {insights ? (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.6, ease: EASE_OUT }}>
-            <p className="font-display text-3xl leading-tight font-extrabold text-rainbow sm:text-4xl">{insights.persona}</p>
-            <p className="mx-auto mt-3 max-w-md text-[0.95rem] leading-relaxed text-paper/75">{insights.personaText}</p>
+            <Translating active={translating} tone="dark">
+              {/* text-rainbow clips its gradient to all text inside, which would show through the skeleton */}
+              <p className={clsx("font-display text-3xl leading-tight font-extrabold sm:text-4xl", !translating && "text-rainbow")}>
+                <Tx>{insights.persona}</Tx>
+              </p>
+              <p className="mx-auto mt-3 max-w-md text-[0.95rem] leading-relaxed text-paper/75">
+                <Tx>{insights.personaText}</Tx>
+              </p>
+            </Translating>
           </motion.div>
         ) : loading ? (
           <div className="mx-auto max-w-sm space-y-2.5">
@@ -111,6 +123,15 @@ export function ScoreCard({
         ) : null}
       </div>
     </section>
+  );
+}
+
+function TranslatingBadge({ label }: { label: string }) {
+  return (
+    <span role="status" className="inline-flex items-center gap-1.5 rounded-full bg-paper/10 py-0.5 pr-3 pl-1 text-xs font-semibold text-paper/85">
+      <Spinner size={20} />
+      {label}
+    </span>
   );
 }
 

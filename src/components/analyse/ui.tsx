@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ComponentType, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ComponentType, type ReactNode } from "react";
 import { animate, useInView, useReducedMotion } from "motion/react";
 import clsx from "clsx";
 import {
@@ -78,6 +78,35 @@ export function CardTitle({ id, children, aside }: { id?: string; children: Reac
 
 export function Skeleton({ className }: { className?: string }) {
   return <div aria-hidden className={clsx("animate-pulse rounded-2xl bg-fog/80", className)} />;
+}
+
+/* ---------------------------------------------------------------- translation */
+
+const TranslatingContext = createContext<"light" | "dark" | null>(null);
+
+/** Marks a subtree as being translated: every <Tx> inside turns into a skeleton. */
+export function Translating({ active, tone = "light", children }: { active: boolean; tone?: "light" | "dark"; children: ReactNode }) {
+  return <TranslatingContext.Provider value={active ? tone : null}>{children}</TranslatingContext.Provider>;
+}
+
+/**
+ * A text that can be translated. While translating, the old text stays in place but invisible,
+ * under a shimmer of exactly its lines, so the layout doesn't jump when the translation lands.
+ */
+export function Tx({ children }: { children: string }) {
+  const tone = useContext(TranslatingContext);
+  if (!tone) return children;
+  return (
+    <span
+      aria-hidden
+      className={clsx(
+        "animate-pulse rounded-md box-decoration-clone text-transparent select-none [-webkit-text-fill-color:transparent]",
+        tone === "dark" ? "bg-paper/15" : "bg-fog/80",
+      )}
+    >
+      {children}
+    </span>
+  );
 }
 
 /* ---------------------------------------------------------------- numbers */

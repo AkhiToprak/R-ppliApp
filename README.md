@@ -5,7 +5,7 @@
 - **Formats:** CSV (UBS, PostFinance, Raiffeisen, ZKB, Kantonalbanken, Migros Bank, Revolut, neon, Yuh …), CAMT.053/054 XML, Excel, PDF
 - **Categorisation:** 300+ Swiss merchant rules (Migros → groceries, SBB → public transport, CSS → insurance …), with an LLM via OpenRouter for everything the rules don't know
 - **Insights:** budget score and persona, strengths and weaknesses, specific critique of spending points, and saving options with CHF estimates (LLM, with a rule-based fallback)
-- **Languages:** Deutsch, Français, Italiano, English, detected from the browser's `Accept-Language`
+- **Languages:** Deutsch, Français, Italiano, English, detected from the browser's `Accept-Language`. Switching language keeps a finished analysis; its insights are translated on demand
 - **Privacy:** parsing, categorisation rules and analysis run in the browser. Mostly merchant names and amounts are sent to the LLM. PDF statements are sent as text with IBANs, card numbers, names and addresses stripped (balance lines may remain). There is no database, no cookies and no storage, so closing the tab erases everything.
 
 ## Getting started
@@ -39,7 +39,7 @@ Open http://localhost:3000. You'll be redirected to `/de`, `/fr`, `/it` or `/en`
 src/
   proxy.ts                 locale detection → /{de|fr|it|en}
   app/[locale]/            landing page + /analyse (upload → processing → dashboard)
-  app/api/                 categorise · insights · extract (OpenRouter, stateless)
+  app/api/                 categorise · insights · translate · extract (OpenRouter, stateless)
   lib/parsers/             CSV / CAMT / XLSX / PDF → Transaction[]
   lib/categorise/          Swiss merchant rules + LLM batching
   lib/analysis/            totals, monthly trend, recurring payments, top merchants

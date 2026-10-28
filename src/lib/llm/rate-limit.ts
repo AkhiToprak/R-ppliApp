@@ -55,4 +55,5 @@ export const routeLimiters = {
   categorise: createRateLimiter({ limit: 30, windowMs: MINUTE }),
   insights: createRateLimiter({ limit: 6, windowMs: MINUTE }),
   extract: createRateLimiter({ limit: 6, windowMs: MINUTE }),
+  translate: createRateLimiter({ limit: 12, windowMs: MINUTE }),
 };

@@ -80,6 +80,9 @@ const de = {
   scoreOutOf: "von 100",
   scoreAria: "Budget-Score: {score} von 100",
   thinking: "Räppli denkt nach …",
+  translating: "Räppli übersetzt …",
+  translateFailed: "Übersetzung fehlgeschlagen – die Tipps sind noch in der Originalsprache.",
+  translateRetry: "Nochmals versuchen",
   fallbackBadge: "Basis-Analyse ohne KI",
 
   // Categories
@@ -242,6 +245,9 @@ const fr = {
   scoreOutOf: "sur 100",
   scoreAria: "Score budget : {score} sur 100",
   thinking: "Räppli réfléchit …",
+  translating: "Räppli traduit …",
+  translateFailed: "La traduction a échoué – les conseils sont encore dans la langue d'origine.",
+  translateRetry: "Réessayer",
   fallbackBadge: "Analyse de base sans IA",
 
   // Categories
@@ -404,6 +410,9 @@ const it = {
   scoreOutOf: "su 100",
   scoreAria: "Punteggio budget: {score} su 100",
   thinking: "Räppli sta pensando …",
+  translating: "Räppli sta traducendo …",
+  translateFailed: "La traduzione non è riuscita – i consigli sono ancora nella lingua originale.",
+  translateRetry: "Riprova",
   fallbackBadge: "Analisi di base senza IA",
 
   // Categories
@@ -566,6 +575,9 @@ const en = {
   scoreOutOf: "out of 100",
   scoreAria: "Budget score: {score} out of 100",
   thinking: "Räppli is thinking …",
+  translating: "Räppli is translating …",
+  translateFailed: "Translation failed – the tips are still in the original language.",
+  translateRetry: "Try again",
   fallbackBadge: "Basic analysis without AI",
 
   // Categories

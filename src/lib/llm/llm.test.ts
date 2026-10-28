@@ -9,6 +9,7 @@ import { chatJSON, LLMUnavailableError } from "./openrouter";
 import { createRateLimiter } from "./rate-limit";
 import {
   analysisSchema,
+  applyTranslation,
   categoriseRequestSchema,
   coerceCategory,
   finaliseInsights,
@@ -17,6 +18,8 @@ import {
   normaliseCategoriseResults,
   normaliseDate,
   normaliseExtracted,
+  translateRequestSchema,
+  translationOutputSchema,
 } from "./schemas";
 
 const LOCALES: Locale[] = ["de", "fr", "it", "en"];
@@ -254,6 +257,64 @@ describe("insights output schema", () => {
 
   it("rejects output without a persona text", () => {
     expect(insightsOutputSchema.safeParse({ score: 50, persona: "x" }).success).toBe(false);
+  });
+});
+
+// ---- translation ---------------------------------------------------------------------
+
+describe("insights translation", () => {
+  const original: Insights = {
+    score: 72,
+    persona: "Sparfuchs",
+    personaText: "Du legst regelmässig etwas zur Seite.",
+    strengths: [{ title: "Gute Sparquote", detail: "Du sparst 22 %." }],
+    weaknesses: [{ title: "Viele Abos", detail: "CHF 85 pro Monat für Abos." }],
+    critiques: [
+      { title: "Essen bestellen", detail: "12 Bestellungen.", target: "Uber Eats", category: "restaurants", amount: 180, suggestion: "Koch zweimal mehr." },
+    ],
+    savings: [{ title: "Abos ausmisten", detail: "Kündige Disney+.", monthlySaving: 30, effort: "easy" }],
+    source: "llm",
+  };
+  const translated = {
+    persona: "Thrifty **fox**",
+    personaText: "You regularly put something aside.",
+    strengths: [{ title: "Good savings rate", detail: "You save 22 %." }],
+    weaknesses: [{ title: "Many subscriptions", detail: "CHF 85 a month on subscriptions." }],
+    critiques: [{ title: "Ordering food", detail: "12 orders.", target: "Uber Eats", suggestion: "Cook twice more." }],
+    savings: [{ title: "Clear out subscriptions", detail: "Cancel Disney+." }],
+  };
+
+  it("accepts the insights in the request schema", () => {
+    expect(translateRequestSchema.safeParse({ locale: "en", insights: original }).success).toBe(true);
+    expect(translateRequestSchema.safeParse({ locale: "es", insights: original }).success).toBe(false);
+  });
+
+  it("swaps only the texts and keeps score, amounts and ids", () => {
+    const out = translationOutputSchema(original).parse(translated);
+    const result = applyTranslation(original, out, "en");
+    expect(result.persona).toBe("Thrifty fox");
+    expect(result.score).toBe(72);
+    expect(result.source).toBe("llm");
+    expect(result.critiques[0]).toEqual({ ...original.critiques[0], title: "Ordering food", detail: "12 orders.", suggestion: "Cook twice more." });
+    expect(result.savings[0]).toMatchObject({ title: "Clear out subscriptions", monthlySaving: 30, effort: "easy" });
+  });
+
+  it("rejects output that drops or adds items", () => {
+    const schema = translationOutputSchema(original);
+    expect(schema.safeParse({ ...translated, strengths: [] }).success).toBe(false);
+    expect(schema.safeParse({ ...translated, savings: [...translated.savings, translated.savings[0]] }).success).toBe(false);
+  });
+
+  it("writes ss instead of ß in German and localises category targets", () => {
+    const fr = { ...original, critiques: [{ ...original.critiques[0], target: "Restaurants" }] };
+    const out = translationOutputSchema(fr).parse({
+      ...translated,
+      personaText: "Du gehst gross raus auf der Straße.",
+      critiques: [{ ...translated.critiques[0], target: "restaurants" }],
+    });
+    const result = applyTranslation(fr, out, "de");
+    expect(result.personaText).toBe("Du gehst gross raus auf der Strasse.");
+    expect(result.critiques[0].target).not.toBe("restaurants");
   });
 });
 

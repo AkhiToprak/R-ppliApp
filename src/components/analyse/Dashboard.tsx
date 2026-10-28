@@ -11,7 +11,7 @@ import { CategoryBreakdown, MonthlyTrend, WeekdayChart } from "./Charts";
 import { InsightsSection } from "./Insights";
 import { KpiTiles } from "./KpiTiles";
 import { LargestExpenses, RecurringList, TopMerchants } from "./Lists";
-import type { DashboardState } from "./model";
+import { insightsIn, type DashboardState } from "./model";
 import { ScoreCard } from "./ScoreCard";
 import { TransactionsTable } from "./TransactionsTable";
 import { EASE_OUT } from "./ui";
@@ -21,15 +21,18 @@ export function Dashboard({
   onRestart,
   onRecategorise,
   onRefreshInsights,
+  onRetryTranslation,
 }: {
   state: DashboardState;
   onRestart: () => void;
   onRecategorise: (txId: string, category: CategoryId, applyToMerchant: boolean) => void;
   onRefreshInsights: () => void;
+  onRetryTranslation: () => void;
 }) {
   const t = useT(analyseMessages);
   const locale = useLocale();
-  const { analysis, meta, insights, insightsLoading } = state;
+  const { analysis, meta, insightsLoading } = state;
+  const { insights, translating, translationFailed } = insightsIn(state, locale);
   const stale = !!insights && !insightsLoading && state.insightsVersion !== state.version;
   const [filter, setFilter] = useState<CategoryId | null>(null);
 
@@ -77,7 +80,7 @@ export function Dashboard({
 
       {/* Score + KPIs */}
       <div className="grid gap-4 sm:gap-6 lg:grid-cols-12">
-        <ScoreCard className="lg:col-span-5" insights={insights} loading={insightsLoading && !insights} />
+        <ScoreCard className="lg:col-span-5" insights={insights} loading={insightsLoading && !insights} translating={translating} />
         <KpiTiles className="lg:col-span-7" analysis={analysis} />
       </div>
 
@@ -93,6 +96,9 @@ export function Dashboard({
         loading={insightsLoading}
         stale={stale}
         onRefresh={onRefreshInsights}
+        translating={translating}
+        translationFailed={translationFailed}
+        onRetryTranslation={onRetryTranslation}
       />
 
       <div className="grid gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">

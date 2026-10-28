@@ -255,6 +255,12 @@ export type InsightsOutput = z.output<typeof insightsOutputSchema>;
 
 const stripMarkdown = (s: string) => s.replace(/\*\*|__|`/g, "");
 
+/** No markdown; Swiss German writes "ss", never "ß". */
+function cleanText(s: string, locale: z.infer<typeof localeSchema>): string {
+  const t = stripMarkdown(s);
+  return locale === "de" ? t.replace(/ß/g, "ss") : t;
+}
+
 /** Cheap models often echo a category id or English label ("travel", "Subscriptions") as the target. */
 function localiseTarget(target: string, locale: z.infer<typeof localeSchema>): string {
   const key = target.trim().toLowerCase();
@@ -272,10 +278,7 @@ export function finaliseInsights(
   out: InsightsOutput,
   ctx: { locale: z.infer<typeof localeSchema>; monthlySpending: number; fallback: Insights },
 ): Insights {
-  const fix = (s: string) => {
-    const t = stripMarkdown(s);
-    return ctx.locale === "de" ? t.replace(/ß/g, "ss") : t;
-  };
+  const fix = (s: string) => cleanText(s, ctx.locale);
   const item = (i: InsightItem): InsightItem => ({ title: fix(i.title), detail: fix(i.detail) });
   const cap = ctx.monthlySpending > 0 ? ctx.monthlySpending : Infinity;
 
@@ -300,6 +303,87 @@ export function finaliseInsights(
     critiques: critiques.length ? critiques : ctx.fallback.critiques,
     savings: savings.length ? savings : ctx.fallback.savings,
     source: "llm",
+  };
+}
+
+// ---- /api/translate ----------------------------------------------------------
+
+const insightItemInput = z.object({ title: z.string().max(300), detail: z.string().max(1_500) });
+
+export const insightsSchema = z.object({
+  score: z.number().finite().min(0).max(100),
+  persona: z.string().max(200),
+  personaText: z.string().max(800),
+  strengths: z.array(insightItemInput).max(10),
+  weaknesses: z.array(insightItemInput).max(10),
+  critiques: z
+    .array(
+      insightItemInput.extend({
+        target: z.string().max(300),
+        category: categoryId.optional(),
+        amount: money.optional(),
+        suggestion: z.string().max(1_000),
+      }),
+    )
+    .max(10),
+  savings: z.array(insightItemInput.extend({ monthlySaving: money, effort: z.enum(["easy", "medium", "hard"]) })).max(10),
+  source: z.enum(["llm", "fallback"]),
+}) satisfies z.ZodType<Insights>;
+
+export const translateRequestSchema = z.object({ locale: localeSchema, insights: insightsSchema });
+
+/** The translatable texts of a set of insights. Numbers, ids and the item order stay with the original. */
+export function insightTexts(i: Insights) {
+  const item = ({ title, detail }: InsightItem) => ({ title, detail });
+  return {
+    persona: i.persona,
+    personaText: i.personaText,
+    strengths: i.strengths.map(item),
+    weaknesses: i.weaknesses.map(item),
+    critiques: i.critiques.map(({ title, detail, target, suggestion }) => ({ title, detail, target, suggestion })),
+    savings: i.savings.map(item),
+  };
+}
+
+export const translationWireSchema = z.object({
+  persona: z.string(),
+  personaText: z.string(),
+  strengths: z.array(insightItemWire),
+  weaknesses: z.array(insightItemWire),
+  critiques: z.array(z.object({ title: z.string(), detail: z.string(), target: z.string(), suggestion: z.string() })),
+  savings: z.array(insightItemWire),
+});
+
+/** Model output for `original`: every list must keep its length so items stay paired with their numbers. */
+export function translationOutputSchema(original: Insights) {
+  return z.object({
+    persona: text(40).pipe(z.string().min(1)),
+    personaText: text(300).pipe(z.string().min(1)),
+    strengths: z.array(insightItemOutput).length(original.strengths.length),
+    weaknesses: z.array(insightItemOutput).length(original.weaknesses.length),
+    critiques: z.array(insightItemOutput.extend({ target: text(80), suggestion: text(400) })).length(original.critiques.length),
+    savings: z.array(insightItemOutput).length(original.savings.length),
+  });
+}
+
+export type TranslationOutput = z.output<ReturnType<typeof translationOutputSchema>>;
+
+/** Puts the translated texts onto the original insights; score, amounts, ids and source are kept. */
+export function applyTranslation(original: Insights, out: TranslationOutput, locale: z.infer<typeof localeSchema>): Insights {
+  const fix = (s: string) => cleanText(s, locale);
+  const item = <T extends InsightItem>(orig: T, t: InsightItem): T => ({ ...orig, title: fix(t.title), detail: fix(t.detail) });
+  return {
+    ...original,
+    persona: fix(out.persona),
+    personaText: fix(out.personaText),
+    strengths: original.strengths.map((s, i) => item(s, out.strengths[i])),
+    weaknesses: original.weaknesses.map((w, i) => item(w, out.weaknesses[i])),
+    critiques: original.critiques.map((c, i) => ({
+      ...item(c, out.critiques[i]),
+      target: localiseTarget(fix(out.critiques[i].target), locale),
+      suggestion: fix(out.critiques[i].suggestion),
+    })),
+    savings: original.savings.map((s, i) => item(s, out.savings[i])),
   };
 }
 
