@@ -77,6 +77,8 @@ interface Dict {
   critiqueTitle: Tpl; // target, amount
   critiqueDetailCat: Tpl; // cat, share
   critiqueDetailMerchant: Tpl; // merchant, merchantAmount, cat, share
+  critiqueTitleOnce: Tpl; // target, amount
+  critiqueDetailMerchantOnce: Tpl; // merchant, merchantAmount, cat, share
   suggestion: Partial<Record<CategoryId, string>> & { default: string };
   saving: Record<SavingKey, { title: string; detail: Tpl }>; // amount
 }
@@ -134,6 +136,8 @@ const de: Dict = {
   critiqueTitle: (p) => `${p.target}: ${p.amount} pro Monat`,
   critiqueDetailCat: (p) => `Auf ${p.cat} entfallen ${p.share} deiner Ausgaben.`,
   critiqueDetailMerchant: (p) => `Allein bei ${p.merchant} landen ${p.merchantAmount} pro Monat; insgesamt gehen ${p.share} deiner Ausgaben an ${p.cat}.`,
+  critiqueTitleOnce: (p) => `${p.target}: ${p.amount} einmalig`,
+  critiqueDetailMerchantOnce: (p) => `Bei ${p.merchant} hast du einmalig ${p.merchantAmount} ausgegeben – das ist kein monatlicher Posten. Insgesamt gehen ${p.share} deiner Ausgaben an ${p.cat}.`,
   suggestion: {
     groceries: "Basics bei Denner, Aldi oder Lidl bzw. als M-Budget/Prix Garantie kaufen, Cumulus-/Supercard-Aktionen nutzen und abends bei Too Good To Go reinschauen.",
     restaurants: "Zwei, drei Mittagessen pro Woche selbst mitnehmen und Lieferdienste zur Ausnahme machen.",
@@ -219,6 +223,8 @@ const fr: Dict = {
   critiqueTitle: (p) => `${p.target} : ${p.amount} par mois`,
   critiqueDetailCat: (p) => `${p.share} de tes dépenses vont à ${p.cat}.`,
   critiqueDetailMerchant: (p) => `Rien que chez ${p.merchant}, ${p.merchantAmount} par mois ; au total, ${p.share} de tes dépenses vont à ${p.cat}.`,
+  critiqueTitleOnce: (p) => `${p.target} : ${p.amount} en une fois`,
+  critiqueDetailMerchantOnce: (p) => `Chez ${p.merchant}, tu as dépensé ${p.merchantAmount} en une fois – ce n'est pas une dépense mensuelle. Au total, ${p.share} de tes dépenses vont à ${p.cat}.`,
   suggestion: {
     groceries: "Acheter les produits de base chez Denner, Aldi ou Lidl, ou en M-Budget/Prix Garantie, profiter des actions Cumulus/Supercard et passer par Too Good To Go le soir.",
     restaurants: "Emporter son lunch deux ou trois fois par semaine et garder la livraison pour les exceptions.",
@@ -304,6 +310,8 @@ const it: Dict = {
   critiqueTitle: (p) => `${p.target}: ${p.amount} al mese`,
   critiqueDetailCat: (p) => `Per ${p.cat} va il ${p.share} delle tue spese.`,
   critiqueDetailMerchant: (p) => `Solo da ${p.merchant} finiscono ${p.merchantAmount} al mese; in totale il ${p.share} delle tue spese va a ${p.cat}.`,
+  critiqueTitleOnce: (p) => `${p.target}: ${p.amount} una tantum`,
+  critiqueDetailMerchantOnce: (p) => `Da ${p.merchant} hai speso ${p.merchantAmount} una tantum – non è una spesa mensile. In totale il ${p.share} delle tue spese va a ${p.cat}.`,
   suggestion: {
     groceries: "Comprare i prodotti di base da Denner, Aldi o Lidl, o in M-Budget/Prix Garantie, sfruttare le azioni Cumulus/Supercard e passare la sera da Too Good To Go.",
     restaurants: "Portarsi il pranzo da casa due o tre volte a settimana e riservare le consegne alle eccezioni.",
@@ -389,6 +397,8 @@ const en: Dict = {
   critiqueTitle: (p) => `${p.target}: ${p.amount} per month`,
   critiqueDetailCat: (p) => `${p.cat} makes up ${p.share} of your spending.`,
   critiqueDetailMerchant: (p) => `${p.merchant} alone takes ${p.merchantAmount} a month; overall ${p.share} of your spending goes to ${p.cat}.`,
+  critiqueTitleOnce: (p) => `${p.target}: ${p.amount} one-off`,
+  critiqueDetailMerchantOnce: (p) => `You spent ${p.merchantAmount} at ${p.merchant} as a one-off – that's not a monthly cost. Overall ${p.share} of your spending goes to ${p.cat}.`,
   suggestion: {
     groceries: "Buy staples at Denner, Aldi or Lidl, or as M-Budget/Prix Garantie, use Cumulus/Supercard deals and check Too Good To Go in the evening.",
     restaurants: "Bring lunch from home two or three times a week and keep delivery for special occasions.",
@@ -606,8 +616,21 @@ export function buildFallbackInsights(analysis: Analysis, locale: Locale): Insig
     .filter((c) => !NO_CRITIQUE.includes(c.category) && c.monthly >= 20 && (c.category !== "housing" || above(c)))
     .sort((x, y) => Number(above(y)) - Number(above(x)) || y.monthly - x.monthly)
     .slice(0, 4)
-    .map((c) => {
+    .map((c): Critique => {
       const merchant = analysis.topMerchants.find((mt) => mt.category === c.category && mt.total > 0);
+      const suggestion = t.suggestion[c.category] ?? t.suggestion.default;
+      // Charged in only one month of a multi-month statement (a hotel stay, a flight):
+      // spreading it over the period would invent a monthly cost, so show the total instead.
+      if (merchant && analysis.byMonth.length > 1 && merchant.months < 2 && merchant.total >= 10) {
+        const p = { merchant: merchant.name, merchantAmount: money(merchant.total), cat: label(c.category), share: pct(c.share) };
+        return {
+          title: t.critiqueTitleOnce({ target: merchant.name, amount: money(merchant.total) }),
+          detail: t.critiqueDetailMerchantOnce(p),
+          target: merchant.name,
+          category: c.category,
+          suggestion,
+        };
+      }
       const merchantMonthly = merchant ? merchant.total / m.months : 0;
       const useMerchant = merchant && merchantMonthly >= 10;
       return {
@@ -618,7 +641,7 @@ export function buildFallbackInsights(analysis: Analysis, locale: Locale): Insig
         target: useMerchant ? merchant.name : label(c.category),
         category: c.category,
         amount: Math.round(useMerchant ? merchantMonthly : c.monthly),
-        suggestion: t.suggestion[c.category] ?? t.suggestion.default,
+        suggestion,
       };
     });
 

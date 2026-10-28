@@ -3,6 +3,7 @@ import { z } from "zod";
 import type { Analysis, Insights, Locale } from "@/lib/types";
 import { analyse } from "@/lib/analysis";
 import { buildFallbackInsights, fallbackScore } from "./fallback-insights";
+import { insightsUserPrompt } from "./prompts";
 import { extractJSON, repairTruncatedJSON } from "./json";
 import { chatJSON, LLMUnavailableError } from "./openrouter";
 import { createRateLimiter } from "./rate-limit";
@@ -85,9 +86,9 @@ function sampleAnalysis(over: Partial<Analysis> = {}): Analysis {
       { month: "2025-02", income, spending: totalSpendingMonthly, saved: 600, byCategory: { groceries: 800 } },
     ],
     topMerchants: [
-      { name: "Migros", category: "groceries", total: 1500, count: 30 },
-      { name: "Uber Eats", category: "restaurants", total: 900, count: 25 },
-      { name: "Swisscom", category: "telecom", total: 237, count: 3 },
+      { name: "Migros", category: "groceries", total: 1500, count: 30, months: 3 },
+      { name: "Uber Eats", category: "restaurants", total: 900, count: 25, months: 3 },
+      { name: "Swisscom", category: "telecom", total: 237, count: 3, months: 3 },
     ],
     recurring: [
       { name: "Netflix", category: "subscriptions", amount: 20.9, frequency: "monthly", monthlyCost: 20.9, occurrences: 3 },
@@ -295,6 +296,24 @@ describe("buildFallbackInsights", () => {
   it("names the top merchant in critiques", () => {
     const i = buildFallbackInsights(sampleAnalysis(), "en");
     expect(i.critiques.some((c) => c.target === "Uber Eats" || c.target === "Migros")).toBe(true);
+  });
+
+  it("shows a merchant charged in only one month as a one-off, not per month", () => {
+    const base = sampleAnalysis();
+    const a = sampleAnalysis({
+      byCategory: [...base.byCategory, { category: "travel", total: 4200, count: 1, share: 0.3, monthlyAverage: 1400 }],
+      topMerchants: [{ name: "Hotel Bairro Alto", category: "travel", total: 4200, count: 1, months: 1 }, ...base.topMerchants],
+    });
+    for (const locale of LOCALES) {
+      const hotel = buildFallbackInsights(a, locale).critiques.find((c) => c.target === "Hotel Bairro Alto");
+      expect(hotel).toBeDefined();
+      expect(hotel?.amount).toBeUndefined(); // no "/month" badge
+      expect(hotel?.title).toMatch(/4.?200/);
+      expect(hotel?.title).not.toMatch(/1.?400/);
+    }
+    const prompt = insightsUserPrompt(a);
+    expect(prompt).toContain("- Hotel Bairro Alto: 4200, one-off (not monthly)");
+    expect(prompt).toContain("- Migros: 1500, 500/mo");
   });
 
   it("the fixture passes the request schema", () => {
