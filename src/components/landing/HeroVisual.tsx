@@ -34,7 +34,7 @@ function FloatingChip({ chip, index, locale, scrollY }: { chip: Chip; index: num
 
   return (
     <motion.div
-      className={clsx("absolute z-20", chip.pos, chip.smOnly && "hidden sm:block")}
+      className={clsx("absolute z-20 will-change-transform", chip.pos, chip.smOnly && "hidden sm:block")}
       style={reduce ? undefined : { y }}
     >
       <motion.div
@@ -42,10 +42,9 @@ function FloatingChip({ chip, index, locale, scrollY }: { chip: Chip; index: num
         animate={{ opacity: 1, scale: 1, rotate: chip.tilt }}
         transition={{ type: "spring", stiffness: 300, damping: 18, delay: 0.7 + index * 0.12 }}
       >
-        <motion.div
-          className="flex items-center gap-2.5 rounded-full bg-paper py-1.5 pr-4 pl-1.5 text-ink shadow-[0_18px_40px_-12px_rgb(0_0_0/0.55)]"
-          animate={reduce ? undefined : { y: [0, -9, 0] }}
-          transition={{ duration: 3.6 + index * 0.45, repeat: Infinity, ease: "easeInOut", delay: index * 0.3 }}
+        <div
+          className="flex animate-bob items-center gap-2.5 rounded-full bg-paper py-1.5 pr-4 pl-1.5 text-ink shadow-[0_18px_40px_-12px_rgb(0_0_0/0.55)]"
+          style={{ animationDuration: `${3.6 + index * 0.45}s`, animationDelay: `${index * 0.3}s` }}
         >
           <span
             className="grid size-9 place-items-center rounded-full text-ink"
@@ -57,7 +56,7 @@ function FloatingChip({ chip, index, locale, scrollY }: { chip: Chip; index: num
             <span className="block text-sm font-extrabold">{chip.merchant}</span>
             <span className="block max-w-[9.5rem] truncate text-[0.7rem] font-semibold text-muted">{meta.label[locale]}</span>
           </span>
-        </motion.div>
+        </div>
       </motion.div>
     </motion.div>
   );
@@ -75,7 +74,7 @@ export function HeroVisual({ locale, labels, ariaLabel }: { locale: Locale; labe
     <div role="img" aria-label={ariaLabel} className="relative mx-auto h-[560px] w-full max-w-[540px] sm:h-[600px] lg:h-[640px]">
       {/* coin, stuck like a sticker on the phone's top-right corner */}
       <motion.div
-        className="absolute -top-[2%] -right-[2%] z-30 origin-top-right scale-[0.6] sm:scale-[0.75] lg:scale-[0.85]"
+        className="absolute -top-[2%] -right-[2%] z-30 origin-top-right scale-[0.6] will-change-transform sm:scale-[0.75] lg:scale-[0.85]"
         style={reduce ? undefined : { y: coinY, rotate: coinRotate }}
       >
         <motion.div
@@ -88,7 +87,7 @@ export function HeroVisual({ locale, labels, ariaLabel }: { locale: Locale; labe
       </motion.div>
 
       {/* phone */}
-      <motion.div className="absolute top-1/2 left-1/2 z-10" style={reduce ? undefined : { y: phoneY }}>
+      <motion.div className="absolute top-1/2 left-1/2 z-10 will-change-transform" style={reduce ? undefined : { y: phoneY }}>
         <motion.div
           className="-translate-x-1/2 -translate-y-1/2 scale-[0.86] sm:scale-100"
           initial={reduce ? false : { opacity: 0, y: 120, rotate: 0 }}

@@ -47,14 +47,14 @@ export function SiteHeader({ variant = "light", showCta = true }: { variant?: "l
     <header
       data-variant={variant}
       className={clsx(
-        "sticky top-0 z-50 w-full transition-[background-color,box-shadow,backdrop-filter] duration-300",
+        "sticky top-0 z-50 w-full transition-[background-color,box-shadow] duration-300",
         dark ? "text-paper" : "text-ink",
         dark
           ? scrolled || open
-            ? "bg-ink/80 shadow-[0_1px_0_rgb(255_255_255/0.08)] backdrop-blur-xl"
+            ? "bg-ink/85 shadow-[0_1px_0_rgb(255_255_255/0.08)] backdrop-blur-md"
             : "bg-ink"
           : scrolled || open
-            ? "bg-paper/80 shadow-[0_1px_0_rgb(11_11_15/0.08)] backdrop-blur-xl"
+            ? "bg-paper/85 shadow-[0_1px_0_rgb(11_11_15/0.08)] backdrop-blur-md"
             : "bg-paper",
       )}
     >

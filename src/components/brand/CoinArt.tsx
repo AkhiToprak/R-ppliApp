@@ -1,7 +1,6 @@
 "use client";
 
 import { useId, type CSSProperties } from "react";
-import { motion } from "motion/react";
 
 /*
  * Hand-inked comic "5 Räppli" coin — pure inline SVG, no fonts, no images.
@@ -152,11 +151,9 @@ export interface CoinArtProps {
   title?: string;
   /** comic sparkles floating around the coin */
   sparkles?: boolean;
-  /** animated light sweep across the face (client-side, motion) */
-  shine?: boolean;
 }
 
-export function CoinArt({ size = 48, className, style, title, sparkles = true, shine = false }: CoinArtProps) {
+export function CoinArt({ size = 48, className, style, title, sparkles = true }: CoinArtProps) {
   const uid = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const id = (name: string) => `rp-${uid}-${name}`;
   const url = (name: string) => `url(#${id(name)})`;
@@ -260,20 +257,6 @@ export function CoinArt({ size = 48, className, style, title, sparkles = true, s
         <path d={RIM_SHINE} fill="none" stroke="#fff" strokeWidth="3.2" strokeLinecap="round" />
         <path d={RIM_SHINE_DOT} fill="none" stroke="#fff" strokeWidth="3.2" strokeLinecap="round" />
 
-        {shine ? (
-          <g clipPath={url("face")}>
-            <motion.g
-              initial={{ x: -95 }}
-              animate={{ x: 95 }}
-              transition={{ duration: 1.1, ease: "easeInOut", repeat: Infinity, repeatDelay: 3.4, delay: 1.2 }}
-            >
-              <g transform="rotate(28)" fill="#fff">
-                <rect x="-9" y="-70" width="10" height="140" fillOpacity="0.55" />
-                <rect x="4" y="-70" width="3.5" height="140" fillOpacity="0.45" />
-              </g>
-            </motion.g>
-          </g>
-        ) : null}
       </g>
 
       {/* glint star sitting on the highlight */}

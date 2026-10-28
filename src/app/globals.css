@@ -34,6 +34,10 @@
   --animate-float: float 6s ease-in-out infinite;
   --animate-spin-slow: spin 18s linear infinite;
   --animate-marquee: marquee 30s linear infinite;
+  /* Idle loops run as CSS transform animations so the compositor plays them without repainting. */
+  --animate-bob: bob 3.6s ease-in-out infinite;
+  --animate-coin-idle: coin-idle 4.2s ease-in-out infinite;
+  --animate-coin-shine: coin-shine 4.5s ease-in-out 1.2s infinite both;
 
   @keyframes float {
     0%, 100% { transform: translateY(0) rotate(0deg); }
@@ -42,6 +46,20 @@
   @keyframes marquee {
     from { transform: translateX(0); }
     to { transform: translateX(-50%); }
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-9px); }
+  }
+  /* Translate percentages are of the coin's own size. */
+  @keyframes coin-idle {
+    0%, 100% { transform: translateY(0) rotate(-2.5deg); }
+    50% { transform: translateY(-6%) rotate(2.5deg); }
+  }
+  /* A 1.1s sweep across the face, then a 3.4s pause. */
+  @keyframes coin-shine {
+    0% { transform: translateX(-106%); }
+    24.4%, 100% { transform: translateX(106%); }
   }
 }
 
