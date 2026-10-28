@@ -13,7 +13,6 @@ export function PrivacyLock() {
 
   return (
     <div ref={ref} aria-hidden className="relative mx-auto w-[260px] sm:w-[320px]">
-      <div className="absolute -inset-16 rounded-full bg-[radial-gradient(closest-side,rgb(242_183_5/0.35),transparent)]" />
       <motion.svg
         viewBox="0 0 320 200"
         className="relative z-0 -mb-20 w-full"
@@ -29,7 +28,7 @@ export function PrivacyLock() {
           strokeLinecap="round"
         />
       </motion.svg>
-      <div className="relative z-10 grid h-[210px] place-items-center rounded-[2.75rem] bg-rainbow shadow-[0_40px_100px_-20px_rgb(255_61_139/0.55)] sm:h-[250px]">
+      <div className="relative z-10 grid h-[210px] place-items-center rounded-[2.75rem] bg-rainbow shadow-[0_30px_60px_-30px_rgb(0_0_0/0.8)] sm:h-[250px]">
         <motion.div
           initial={false}
           animate={play && !reduce ? { rotate: [0, -14, 10, -4, 0], scale: [1, 1.08, 1] } : undefined}

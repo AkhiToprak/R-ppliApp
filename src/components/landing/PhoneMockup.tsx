@@ -45,7 +45,7 @@ export function PhoneMockup({ locale, labels }: { locale: Locale; labels: PhoneL
   return (
     <div
       ref={ref}
-      className="relative h-[540px] w-[264px] rounded-[3rem] bg-ink-soft p-2.5 shadow-[0_50px_120px_-30px_rgb(255_61_139/0.55),0_30px_60px_-30px_rgb(0_0_0/0.8)] ring-1 ring-paper/15"
+      className="relative h-[540px] w-[264px] rounded-[3rem] bg-ink-soft p-2.5 shadow-[0_30px_60px_-30px_rgb(0_0_0/0.8)] ring-1 ring-paper/15"
     >
       <div className="relative flex h-full flex-col overflow-hidden rounded-[2.4rem] bg-paper px-4 pt-3 pb-4 text-ink">
         {/* status bar */}

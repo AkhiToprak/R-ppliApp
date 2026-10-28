@@ -219,7 +219,6 @@ function Savings({ options }: { options: SavingOption[] }) {
         transition={{ duration: 0.7, ease: EASE_OUT }}
         className="relative isolate flex flex-col justify-center overflow-hidden rounded-[2rem] bg-ink p-7 text-paper sm:p-10 lg:col-span-5 lg:self-start lg:sticky lg:top-24"
       >
-        <div aria-hidden className="absolute -top-24 -right-16 -z-10 size-72 rounded-full bg-rainbow opacity-30 blur-3xl" />
         <p className="text-sm font-semibold text-paper/70">{t("savingsPotential")}</p>
         <p className="mt-2 font-display text-[2.5rem] leading-none font-extrabold tracking-tight text-rainbow sm:text-6xl lg:text-[2.75rem] xl:text-[3.25rem]">
           <CountUp value={monthly} format={(n) => t("savingsPerMonth", { amount: money(n) }).replace("/", "/\u200B")} duration={1.4} />

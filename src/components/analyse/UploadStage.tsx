@@ -172,7 +172,6 @@ export function UploadStage({ onFile, onSample }: { onFile: (file: File) => void
           aria-labelledby="privacy-title"
           className="relative overflow-hidden rounded-[2.5rem] bg-ink p-7 text-paper sm:p-9 lg:col-span-5"
         >
-          <div aria-hidden className="absolute -top-24 -right-24 size-64 rounded-full bg-rainbow opacity-30 blur-3xl" />
           <h2 id="privacy-title" className="relative font-display text-3xl font-extrabold sm:text-4xl">
             {t("privacyTitle")}
           </h2>
