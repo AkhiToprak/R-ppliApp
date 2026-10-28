@@ -86,7 +86,7 @@ Output — reply with ONE JSON object only:
   "persona": "fun 1–3 word label",
   "strengths": [{"title": "short", "detail": "1–2 sentences"}],            // 3–4 items
   "weaknesses": [{"title": "short", "detail": "1–2 sentences"}],           // 3–4 items
-  "critiques": [{"title": "short", "detail": "what and why, with numbers", "target": "merchant or category name", "category": "<category id>", "amount": <monthly CHF number>, "suggestion": "one concrete action"}],  // 3–5 items
+  "critiques": [{"title": "short", "detail": "what and why, with numbers", "target": "merchant name as in the data, or the category name translated into the output language (never the English category id)", "category": "<category id>", "amount": <monthly CHF number>, "suggestion": "one concrete action"}],  // 3–5 items
   "savings": [{"title": "short", "detail": "how, concretely", "monthlySaving": <realistic monthly CHF number>, "effort": "easy" | "medium" | "hard"}]  // 3–5 items
 }
 "category" must be one of: ${CATEGORY_IDS.join(", ")}.

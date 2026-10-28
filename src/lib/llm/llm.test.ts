@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 import type { Analysis, Insights, Locale } from "@/lib/types";
+import { analyse } from "@/lib/analysis";
 import { buildFallbackInsights, fallbackScore } from "./fallback-insights";
 import { extractJSON, repairTruncatedJSON } from "./json";
 import { chatJSON, LLMUnavailableError } from "./openrouter";
@@ -406,5 +407,19 @@ describe("chatJSON", () => {
     expect(retryMessages).toHaveLength(4);
     expect(retryMessages[3].content).toMatch(/did not match the required schema/);
     expect(bodies[0].provider).toEqual({ data_collection: "deny" });
+  });
+});
+
+describe("finaliseInsights target localisation", () => {
+  it("replaces category ids and English labels with the locale label", async () => {
+    const { finaliseInsights } = await import("./schemas");
+    const fallback = buildFallbackInsights(analyse([]), "fr");
+    const base = { summary: "s", score: 50, persona: "p", strengths: [], weaknesses: [], savings: [] };
+    const crit = (target: string) => ({ title: "t", detail: "d", target, suggestion: "x" });
+    const out = finaliseInsights(
+      { ...base, critiques: [crit("travel"), crit("Subscriptions"), crit("CSS Kranken-Versicherung AG")] } as never,
+      { locale: "fr", monthlySpending: 1000, fallback },
+    );
+    expect(out.critiques.map((c) => c.target)).toEqual(["Voyages & vacances", "Abonnements & streaming", "CSS Kranken-Versicherung AG"]);
   });
 });

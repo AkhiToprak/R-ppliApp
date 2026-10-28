@@ -2,6 +2,7 @@
 // parsing (with coercion) and clean "wire" schemas used for structured output.
 
 import { z } from "zod";
+import { CATEGORIES } from "@/lib/categories";
 import {
   CATEGORY_IDS,
   type Analysis,
@@ -251,6 +252,15 @@ export type InsightsOutput = z.output<typeof insightsOutputSchema>;
 
 const stripMarkdown = (s: string) => s.replace(/\*\*|__|`/g, "");
 
+/** Cheap models often echo a category id or English label ("travel", "Subscriptions") as the target. */
+function localiseTarget(target: string, locale: z.infer<typeof localeSchema>): string {
+  const key = target.trim().toLowerCase();
+  for (const [id, meta] of Object.entries(CATEGORIES)) {
+    if (key === id || key === meta.label.en.toLowerCase()) return meta.label[locale];
+  }
+  return target;
+}
+
 /**
  * Final clean-up of model insights: Swiss German "ss", no markdown, savings capped to
  * plausible amounts, empty lists topped up from the rule-based fallback.
@@ -267,7 +277,7 @@ export function finaliseInsights(
   const cap = ctx.monthlySpending > 0 ? ctx.monthlySpending : Infinity;
 
   const critiques: Critique[] = out.critiques.map((c) => {
-    const res: Critique = { ...item(c), target: fix(c.target), suggestion: fix(c.suggestion) };
+    const res: Critique = { ...item(c), target: localiseTarget(fix(c.target), ctx.locale), suggestion: fix(c.suggestion) };
     if (c.category) res.category = c.category;
     if (c.amount !== undefined) res.amount = c.amount;
     return res;
