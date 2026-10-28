@@ -160,12 +160,12 @@ export interface SavingOption extends InsightItem {
 }
 
 export interface Insights {
-  /** 2–3 sentence overall verdict. */
-  summary: string;
   /** 0..100 budget health score. */
   score: number;
   /** One-word or short label for the score, e.g. "Sparfuchs". */
   persona: string;
+  /** One short, general sentence explaining the persona type. */
+  personaText: string;
   strengths: InsightItem[];
   weaknesses: InsightItem[];
   critiques: Critique[];

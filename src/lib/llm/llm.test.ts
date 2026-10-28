@@ -106,8 +106,8 @@ function sampleAnalysis(over: Partial<Analysis> = {}): Analysis {
 }
 
 function expectValidInsights(i: Insights) {
-  expect(typeof i.summary).toBe("string");
-  expect(i.summary.length).toBeGreaterThan(10);
+  expect(typeof i.personaText).toBe("string");
+  expect(i.personaText.length).toBeGreaterThan(10);
   expect(i.score).toBeGreaterThanOrEqual(0);
   expect(i.score).toBeLessThanOrEqual(100);
   expect(Number.isInteger(i.score)).toBe(true);
@@ -218,9 +218,9 @@ describe("insights output schema", () => {
 
   it("clamps score, trims lists, coerces categories and fixes ß", () => {
     const raw = {
-      summary: "Du machst das **gut**, weiter so mit dem Sparen. Grüße gibt es keine.",
       score: 140,
       persona: "Sparfuchs",
+      personaText: "Du machst das **gut**, weiter so mit dem Sparen. Grüße gibt es keine.",
       strengths: Array.from({ length: 6 }, (_, i) => ({ title: `S${i}`, detail: "gut" })),
       weaknesses: [{ title: "W", detail: "Straße" }, { nope: true }],
       critiques: [{ title: "Uber Eats", detail: "viel", target: "Uber Eats", category: "food", amount: "203", suggestion: "kochen" }],
@@ -239,20 +239,20 @@ describe("insights output schema", () => {
 
     const final = finaliseInsights(out, { locale: "de", monthlySpending: 4000, fallback });
     expect(final.source).toBe("llm");
-    expect(final.summary).not.toMatch(/ß|\*\*/);
+    expect(final.personaText).not.toMatch(/ß|\*\*/);
     expect(final.weaknesses[0].detail).toBe("Strasse");
     expect(final.savings).toHaveLength(1); // the negative one is dropped
     expect(final.savings[0].monthlySaving).toBe(4000); // capped to monthly spending
   });
 
   it("tops up empty lists from the fallback", () => {
-    const out = insightsOutputSchema.parse({ summary: "Alles im grünen Bereich.", score: 70, persona: "X", strengths: "oops" });
+    const out = insightsOutputSchema.parse({ score: 70, persona: "X", personaText: "Alles im grünen Bereich.", strengths: "oops" });
     const final = finaliseInsights(out, { locale: "de", monthlySpending: 4000, fallback });
     expect(final.strengths).toEqual(fallback.strengths);
     expect(final.savings).toEqual(fallback.savings);
   });
 
-  it("rejects output without a summary", () => {
+  it("rejects output without a persona text", () => {
     expect(insightsOutputSchema.safeParse({ score: 50, persona: "x" }).success).toBe(false);
   });
 });
@@ -267,7 +267,7 @@ describe("buildFallbackInsights", () => {
     expect(i.weaknesses.length).toBeGreaterThanOrEqual(1);
     expect(i.critiques.length).toBeGreaterThanOrEqual(3);
     expect(i.savings.length).toBeGreaterThanOrEqual(3);
-    expect(i.summary).toContain("CHF");
+    expect(i.personaText.length).toBeGreaterThan(10);
     if (locale === "de") expect(JSON.stringify(i)).not.toContain("ß");
   });
 
@@ -459,7 +459,7 @@ describe("finaliseInsights target localisation", () => {
   it("replaces category ids and English labels with the locale label", async () => {
     const { finaliseInsights } = await import("./schemas");
     const fallback = buildFallbackInsights(analyse([]), "fr");
-    const base = { summary: "s", score: 50, persona: "p", strengths: [], weaknesses: [], savings: [] };
+    const base = { score: 50, persona: "p", personaText: "s", strengths: [], weaknesses: [], savings: [] };
     const crit = (target: string) => ({ title: "t", detail: "d", target, suggestion: "x" });
     const out = finaliseInsights(
       { ...base, critiques: [crit("travel"), crit("Subscriptions"), crit("CSS Kranken-Versicherung AG")] } as never,
