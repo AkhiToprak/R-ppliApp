@@ -95,6 +95,8 @@ export interface MerchantTotal {
   category: CategoryId;
   total: number;
   count: number;
+  /** Distinct calendar months with at least one purchase (1 = one-off, not a monthly cost). */
+  months: number;
 }
 
 export interface RecurringPayment {

@@ -149,7 +149,7 @@ describe("analyse: merchants and largest expenses", () => {
 
   it("groups by normalised counterparty with most common spelling", () => {
     expect(a.topMerchants[0].name).toBe("Kino Pathé Zürich"); // sorted desc by total
-    expect(a.topMerchants.find((m) => m.name === "Migros")).toEqual({ name: "Migros", total: 100, count: 3, category: "groceries" });
+    expect(a.topMerchants.find((m) => m.name === "Migros")).toEqual({ name: "Migros", total: 100, count: 3, months: 1, category: "groceries" });
   });
 
   it("falls back to the description cleaned of digits", () => {
@@ -157,6 +157,17 @@ describe("analyse: merchants and largest expenses", () => {
     expect(kino).toBeDefined();
     expect(kino?.count).toBe(2);
     expect(kino?.name).toBe("Kino Pathé Zürich");
+  });
+
+  it("counts the distinct months a merchant was charged in", () => {
+    const b = analyse([
+      tx("2026-01-03", -420, "travel", "Hotel Bairro Alto"),
+      tx("2026-01-05", -60, "groceries", "Migros"),
+      tx("2026-02-05", -60, "groceries", "Migros"),
+      tx("2026-02-20", -60, "groceries", "Migros"),
+    ]);
+    expect(b.topMerchants.find((m) => m.name === "Hotel Bairro Alto")?.months).toBe(1);
+    expect(b.topMerchants.find((m) => m.name === "Migros")?.months).toBe(2);
   });
 
   it("excludes savings and transfers and caps at 10", () => {
