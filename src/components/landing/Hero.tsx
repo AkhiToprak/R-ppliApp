@@ -14,12 +14,6 @@ export function Hero({ locale, t }: { locale: Locale; t: LandingT }) {
 
   return (
     <section aria-labelledby="hero-title" className="relative isolate overflow-hidden bg-ink text-paper">
-      {/* glow blobs (radial gradients: cheap, no filter) */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -bottom-48 -left-40 size-[38rem] rounded-full bg-[radial-gradient(closest-side,rgb(255_122_26/0.32),transparent)]" />
-        <div className="absolute -right-24 -bottom-40 size-[30rem] rounded-full bg-[radial-gradient(closest-side,rgb(31_182_255/0.35),transparent)]" />
-      </div>
-
       <div className="mx-auto grid max-w-7xl items-center gap-6 px-4 pt-10 pb-16 sm:px-6 lg:grid-cols-[1.08fr_1fr] lg:gap-8 lg:px-8 lg:pt-16 lg:pb-28">
         <div className="relative z-10">
           <h1

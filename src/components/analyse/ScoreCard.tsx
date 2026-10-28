@@ -34,7 +34,6 @@ export function ScoreCard({
       aria-busy={loading}
       className={clsx("relative isolate overflow-hidden rounded-[2rem] bg-ink p-6 text-paper sm:p-8", className)}
     >
-      <div aria-hidden className="absolute -bottom-28 -left-20 -z-10 size-72 rounded-full bg-rainbow opacity-25 blur-3xl" />
 
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 id="score-title" className="text-sm font-semibold text-paper/70">

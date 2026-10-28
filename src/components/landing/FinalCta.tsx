@@ -27,7 +27,6 @@ export function FinalCta({ locale, t }: { locale: Locale; t: LandingT }) {
           </div>
         </Reveal>
         <div aria-hidden className="relative mx-auto grid place-items-center">
-          <div className="absolute size-[120%] rounded-full bg-[radial-gradient(closest-side,rgb(255_216_77/0.9),transparent)]" />
           <div className="relative origin-center scale-[0.7] sm:scale-90 lg:scale-100">
             <RappliCoin size={300} animated />
           </div>
