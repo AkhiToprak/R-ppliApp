@@ -2,7 +2,7 @@
 
 import { useId, useRef, useState, type DragEvent, type KeyboardEvent } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ChevronDown, CloudUpload, Download, EyeOff, Lock, MonitorSmartphone, Sparkles, X } from "lucide-react";
+import { ChevronDown, CloudUpload, EyeOff, Lock, MonitorSmartphone, Sparkles, X } from "lucide-react";
 import clsx from "clsx";
 import { RappliCoin } from "@/components/brand/RappliCoin";
 import { useLocale, useT } from "@/lib/i18n/client";
@@ -155,14 +155,6 @@ export function UploadStage({ onFile, onSample }: { onFile: (file: File) => void
               <Sparkles size={18} aria-hidden />
               {t("sampleButton")}
             </button>
-            <a
-              href="/samples/beispiel-kontoauszug.csv"
-              download
-              className="inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-ink underline-offset-4 hover:underline focus-visible:ring-4 focus-visible:ring-coin focus-visible:outline-none"
-            >
-              <Download size={16} aria-hidden />
-              {t("sampleDownload")}
-            </a>
           </div>
         </motion.div>
 
