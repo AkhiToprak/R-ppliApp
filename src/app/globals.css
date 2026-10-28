@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+/*
+ * Räppli design tokens — TWINT-inspired: bold black/white sections, oversized
+ * heavy headlines, pill buttons, big rounded cards, vivid gradient accents.
+ * Brand anchor is the brass "5 Rappen" coin gold.
+ */
+@theme {
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display-face), var(--font-body), ui-sans-serif, sans-serif;
+
+  --color-ink: #0b0b0f;
+  --color-ink-soft: #1a1a22;
+  --color-paper: #ffffff;
+  --color-mist: #f3f3f6;
+  --color-fog: #e6e6ec;
+  --color-muted: #6b6b78;
+
+  --color-coin: #f2b705;
+  --color-coin-light: #ffd84d;
+  --color-coin-dark: #b07d00;
+  --color-swiss: #e3001b;
+
+  --color-pink: #ff3d8b;
+  --color-orange: #ff7a1a;
+  --color-sun: #ffc800;
+  --color-mint: #19d3a2;
+  --color-sky: #1fb6ff;
+  --color-violet: #7b5cff;
+
+  --radius-card: 2rem;
+  --radius-pill: 999px;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-spin-slow: spin 18s linear infinite;
+  --animate-marquee: marquee 30s linear infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-14px) rotate(3deg); }
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+}
+
+@utility bg-rainbow {
+  background-image: linear-gradient(100deg, var(--color-pink), var(--color-orange) 30%, var(--color-sun) 55%, var(--color-mint) 78%, var(--color-sky));
+}
+
+@utility text-rainbow {
+  background-image: linear-gradient(100deg, var(--color-pink), var(--color-orange) 30%, var(--color-sun) 55%, var(--color-mint) 78%, var(--color-sky));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-coin-light);
+  color: var(--color-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
