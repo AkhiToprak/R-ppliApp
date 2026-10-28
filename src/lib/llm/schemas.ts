@@ -179,9 +179,9 @@ const insightItemWire = z.object({ title: z.string(), detail: z.string() });
 
 /** Clean schema for structured output. */
 export const insightsWireSchema = z.object({
-  summary: z.string(),
   score: z.number().int().min(0).max(100),
   persona: z.string(),
+  personaText: z.string(),
   strengths: z.array(insightItemWire),
   weaknesses: z.array(insightItemWire),
   critiques: z.array(
@@ -225,9 +225,9 @@ const listOf = <T extends z.ZodType>(item: T, max: number) =>
 
 /** Lenient model output → coerced, clamped, trimmed. */
 export const insightsOutputSchema = z.object({
-  summary: text(800).pipe(z.string().min(10)),
   score: finiteNumber.transform((n) => Math.round(Math.min(100, Math.max(0, n)))),
   persona: text(40).pipe(z.string().min(1)),
+  personaText: text(300).pipe(z.string().min(10)),
   strengths: listOf(insightItemOutput, 4),
   weaknesses: listOf(insightItemOutput, 4),
   critiques: listOf(
@@ -292,9 +292,9 @@ export function finaliseInsights(
   const strengths = out.strengths.map(item);
   const weaknesses = out.weaknesses.map(item);
   return {
-    summary: fix(out.summary),
     score: out.score,
     persona: fix(out.persona),
+    personaText: fix(out.personaText),
     strengths: strengths.length ? strengths : ctx.fallback.strengths,
     weaknesses: weaknesses.length ? weaknesses : ctx.fallback.weaknesses,
     critiques: critiques.length ? critiques : ctx.fallback.critiques,

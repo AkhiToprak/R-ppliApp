@@ -10,9 +10,9 @@ function isInsights(v: unknown): v is Insights {
   if (!v || typeof v !== "object") return false;
   const o = v as Record<string, unknown>;
   return (
-    typeof o.summary === "string" &&
     typeof o.score === "number" &&
     typeof o.persona === "string" &&
+    typeof o.personaText === "string" &&
     Array.isArray(o.strengths) &&
     Array.isArray(o.weaknesses) &&
     Array.isArray(o.critiques) &&

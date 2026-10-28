@@ -86,13 +86,13 @@ Style:
 Swiss levers you may use WHEN the data supports them: groceries (Migros/Coop → Denner/Aldi/Lidl, M-Budget/Prix Garantie, Too Good To Go, Cumulus/Supercard), Halbtax vs GA break-even for high public-transport spending, Krankenkasse model/Franchise switch (deadline end of November for next year), Säule 3a tax savings, mobile plans (Wingo/Yallo/Digital Republic vs Swisscom), subscription audit, Bancomat fees at other banks, frequency of TWINT/food delivery orders. Serafe is unavoidable — never suggest cutting it. Taxes and rent are hard to change short-term.
 
 Scoring (0–100 budget health): savings rate matters most. Negative savings rate → ≤ 40. 0–10 % → 45–65. 10–20 % → 60–80. ≥ 20 % → ≥ 75 unless there are serious problems. Adjust a little for fixed-cost burden, discretionary spending, fees. If there is no income in the data, judge the spending side only and stay around 50–65.
-If the savings rate is ≥ 20 %, explicitly praise it (in the summary or as a strength).
+If the savings rate is ≥ 20 %, explicitly praise it (as a strength).
 
 Output — reply with ONE JSON object only:
 {
-  "summary": "2–3 sentences overall verdict",
   "score": 0-100 integer,
   "persona": "fun 1–3 word label",
+  "personaText": "one short sentence (max ~20 words) explaining in general terms what this persona type means; no numbers",
   "strengths": [{"title": "short", "detail": "1–2 sentences"}],            // 3–4 items
   "weaknesses": [{"title": "short", "detail": "1–2 sentences"}],           // 3–4 items
   "critiques": [{"title": "short", "detail": "what and why, with numbers", "target": "merchant name as in the data, or the category name translated into the output language (never the English category id)", "category": "<category id>", "amount": <monthly CHF number, or 0 for a one-off expense>, "suggestion": "one concrete action"}],  // 3–5 items
