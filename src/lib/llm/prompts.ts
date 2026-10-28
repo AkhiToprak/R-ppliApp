@@ -1,6 +1,14 @@
 // Prompt builders for the LLM routes (pure string building, no I/O).
 
-import { CATEGORY_IDS, NON_SPENDING_CATEGORIES, type Analysis, type CategoryId, type Locale } from "@/lib/types";
+import {
+  CATEGORY_IDS,
+  NON_SPENDING_CATEGORIES,
+  firstMonthOf,
+  isSingleMonth,
+  type Analysis,
+  type CategoryId,
+  type Locale,
+} from "@/lib/types";
 
 // ---- categorise ----------------------------------------------------------------
 
@@ -110,9 +118,12 @@ export function insightsUserPrompt(a: Analysis): string {
   const spend = a.byCategory.filter((c) => !NON_SPENDING_CATEGORIES.includes(c.category));
   if (spend.length) {
     lines.push(
-      `Spending categories (id: CHF per month, share of spending, number of transactions):\n${spend
+      `Spending categories (id: CHF per month, or the total if booked in one month only; share of spending; number of transactions):\n${spend
         .slice(0, 22)
-        .map((c) => `- ${c.category}: ${r0(c.monthlyAverage)}, ${pct(c.share)}, ${c.count}x`)
+        .map(
+          (c) =>
+            `- ${c.category}: ${isSingleMonth(c, a) ? `${r0(c.total)} in ${firstMonthOf(c.category, a) ?? "one month"} only (one-off, not monthly)` : r0(c.monthlyAverage)}, ${pct(c.share)}, ${c.count}x`,
+        )
         .join("\n")}`,
     );
   }
@@ -120,14 +131,12 @@ export function insightsUserPrompt(a: Analysis): string {
   if (nonSpend.length) lines.push(`Non-spending flows per month: ${nonSpend.map((c) => `${c.category} ${r0(c.monthlyAverage)}`).join(", ")}.`);
 
   if (a.topMerchants.length) {
-    // Only charged in one month of a multi-month statement → one-off, not a monthly cost.
-    const multiMonth = a.byMonth.length > 1;
     lines.push(
       `Top merchants (total CHF over period, per month or one-off, count, months with purchases, category):\n${a.topMerchants
         .slice(0, 12)
         .map(
           (m) =>
-            `- ${clip(m.name, 50)}: ${r0(m.total)}, ${multiMonth && m.months < 2 ? "one-off (not monthly)" : `${r0(m.total / months)}/mo`}, ${m.count}x, ${m.months} month(s), ${m.category}`,
+            `- ${clip(m.name, 50)}: ${r0(m.total)}, ${isSingleMonth(m, a) ? "one-off (not monthly)" : `${r0(m.total / months)}/mo`}, ${m.count}x, ${m.months} month(s), ${m.category}`,
         )
         .join("\n")}`,
     );

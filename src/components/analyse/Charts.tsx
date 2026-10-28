@@ -10,7 +10,7 @@ import { CATEGORIES } from "@/lib/categories";
 import { formatDate, formatMoney, formatMonth, formatPercent } from "@/lib/i18n/core";
 import { useLocale, useT } from "@/lib/i18n/client";
 import { analyseMessages } from "@/lib/i18n/messages/analyse";
-import { NON_SPENDING_CATEGORIES, type Analysis, type CategoryId, type CategoryTotal } from "@/lib/types";
+import { NON_SPENDING_CATEGORIES, firstMonthOf, isSingleMonth, type Analysis, type CategoryId, type CategoryTotal } from "@/lib/types";
 import { Card, CardTitle, CategoryBadge, CountUp, EASE_OUT, useCompactNumber } from "./ui";
 
 /* Chart chrome tokens (light surface #f3f3f6). */
@@ -219,7 +219,11 @@ export function CategoryBreakdown({
                         </span>
                         <span className="mt-1 flex justify-between gap-2 text-xs text-muted tabular-nums">
                           <span>{formatPercent(total > 0 ? c.total / total : 0, locale, 1)}</span>
-                          <span>{t("catPerMonth", { amount: money(c.monthlyAverage) })}</span>
+                          <span>
+                            {isSingleMonth(c, analysis)
+                              ? t("catOnlyIn", { month: formatMonth(firstMonthOf(c.category, analysis) ?? analysis.period.from.slice(0, 7), locale, "long") })
+                              : t("catPerMonth", { amount: money(c.monthlyAverage) })}
+                          </span>
                         </span>
                       </span>
                     </span>

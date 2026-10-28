@@ -136,6 +136,7 @@ export const analysisSchema = z.object({
         count: z.number().finite(),
         share: z.number().finite(),
         monthlyAverage: money,
+        months: z.number().finite(),
       }),
     )
     .max(60),

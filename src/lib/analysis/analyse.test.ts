@@ -28,6 +28,17 @@ describe("analyse: totals", () => {
     expect(groceries?.count).toBe(2);
   });
 
+  it("counts the distinct months a category was booked in, ignoring refund-only months", () => {
+    const r = analyse([
+      tx("2026-07-14", -238.4, "travel", "easyJet"),
+      tx("2026-08-15", -420, "travel", "Hotel"),
+      tx("2026-08-31", -850, "taxes", "Steueramt"),
+      tx("2026-09-02", 50, "travel", "Hotel"),
+    ]);
+    expect(r.byCategory.find((c) => c.category === "travel")?.months).toBe(2);
+    expect(r.byCategory.find((c) => c.category === "taxes")?.months).toBe(1);
+  });
+
   it("floors refund-only categories at zero and omits them", () => {
     const r = analyse([tx("2026-01-01", 80, "shopping", "Zalando"), tx("2026-01-02", -10, "fees")]);
     expect(r.byCategory.find((c) => c.category === "shopping")).toBeUndefined();

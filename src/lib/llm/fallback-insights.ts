@@ -6,6 +6,7 @@ import { categoryLabel } from "@/lib/categories";
 import { formatMoney, formatPercent } from "@/lib/i18n/core";
 import {
   NON_SPENDING_CATEGORIES,
+  isSingleMonth,
   type Analysis,
   type CategoryId,
   type Critique,
@@ -439,6 +440,9 @@ interface CatStat {
   category: CategoryId;
   monthly: number;
   share: number;
+  total: number;
+  /** Only booked in one month: `monthly` is not a real monthly cost. */
+  oneOff: boolean;
 }
 
 function metrics(a: Analysis) {
@@ -450,9 +454,13 @@ function metrics(a: Analysis) {
       category: c.category,
       monthly: c.monthlyAverage > 0 ? c.monthlyAverage : c.total / months,
       share: c.share > 0 ? c.share : totalSpending > 0 ? c.total / totalSpending : 0,
+      total: c.total,
+      oneOff: isSingleMonth(c, a),
     }))
     .sort((x, y) => y.monthly - x.monthly);
-  const cat = (id: CategoryId): CatStat => spend.find((c) => c.category === id) ?? { category: id, monthly: 0, share: 0 };
+  const cat = (id: CategoryId): CatStat =>
+    spend.find((c) => c.category === id) ?? { category: id, monthly: 0, share: 0, total: 0, oneOff: false };
+  const regular = (id: CategoryId) => (cat(id).oneOff ? 0 : cat(id).monthly);
 
   const recurringSubs = a.recurring.filter((r) => r.category === "subscriptions").reduce((s, r) => s + r.monthlyCost, 0);
   const recurringFixed = a.recurring.filter((r) => !NON_SPENDING_CATEGORIES.includes(r.category)).reduce((s, r) => s + r.monthlyCost, 0);
@@ -465,7 +473,8 @@ function metrics(a: Analysis) {
     savingsRate: a.totalIncome > 0 && a.savingsRate !== null && Number.isFinite(a.savingsRate) ? a.savingsRate : null,
     spend,
     cat,
-    subscriptions: Math.max(cat("subscriptions").monthly, recurringSubs),
+    regular,
+    subscriptions: Math.max(regular("subscriptions"), recurringSubs),
     recurringFixed,
     hasData: a.transactionCount > 0 && (totalSpending > 0 || a.totalIncome > 0),
   };
@@ -549,7 +558,7 @@ export function buildFallbackInsights(analysis: Analysis, locale: Locale): Insig
 
   const score = fallbackScore(analysis);
   const rate = m.savingsRate;
-  const top = m.spend[0];
+  const top = m.spend.find((c) => !c.oneOff);
 
   // Summary
   const parts: string[] = [];
@@ -567,8 +576,8 @@ export function buildFallbackInsights(analysis: Analysis, locale: Locale): Insig
   else if (rate !== null && rate > 0) strengths.push(t.s.positive({ rate: pct(rate), amount: money(m.monthlyIncome * rate) }));
   if (m.monthlySaved >= 20) strengths.push(t.s.activeSaving({ amount: money(m.monthlySaved) }));
   const restaurants = m.cat("restaurants");
-  if (m.monthlySpending > 0 && restaurants.share < 0.07) strengths.push(t.s.lowRestaurants({ amount: money(restaurants.monthly), share: pct(restaurants.share) }));
-  if (m.cat("car").monthly < 20 && m.cat("transport").monthly > 0) strengths.push(t.s.publicTransport({ amount: money(m.cat("transport").monthly) }));
+  if (m.monthlySpending > 0 && restaurants.share < 0.07 && !restaurants.oneOff) strengths.push(t.s.lowRestaurants({ amount: money(restaurants.monthly), share: pct(restaurants.share) }));
+  if (m.cat("car").monthly < 20 && m.regular("transport") > 0) strengths.push(t.s.publicTransport({ amount: money(m.cat("transport").monthly) }));
   if (m.subscriptions > 0 && m.subscriptions < 30) strengths.push(t.s.leanSubs({ amount: money(m.subscriptions) }));
   if (m.cat("fees").monthly < 2) strengths.push(t.s.lowFees);
   if (m.cat("cash").share < 0.05) strengths.push(t.s.lowCash);
@@ -586,11 +595,11 @@ export function buildFallbackInsights(analysis: Analysis, locale: Locale): Insig
   if (rate === null) weaknesses.push(t.w.noIncome);
   else if (rate < 0) weaknesses.push(t.w.negative({ amount: money(-rate * m.monthlyIncome) }));
   else if (rate < 0.1) weaknesses.push(t.w.thin({ rate: pct(rate) }));
-  if (restaurants.share > 0.12) weaknesses.push(t.w.restaurants({ amount: money(restaurants.monthly), share: pct(restaurants.share) }));
+  if (restaurants.share > 0.12 && !restaurants.oneOff) weaknesses.push(t.w.restaurants({ amount: money(restaurants.monthly), share: pct(restaurants.share) }));
   if (m.subscriptions > 50) weaknesses.push(t.w.subs({ amount: money(m.subscriptions) }));
-  if (m.cat("fees").monthly > 5) weaknesses.push(t.w.fees({ amount: money(m.cat("fees").monthly) }));
+  if (m.regular("fees") > 5) weaknesses.push(t.w.fees({ amount: money(m.regular("fees")) }));
   const cash = m.cat("cash");
-  if (cash.share > 0.1) weaknesses.push(t.w.cash({ amount: money(cash.monthly), share: pct(cash.share) }));
+  if (cash.share > 0.1 && !cash.oneOff) weaknesses.push(t.w.cash({ amount: money(cash.monthly), share: pct(cash.share) }));
   for (const c of m.spend.slice(0, 4)) {
     const range = TYPICAL_SHARE[c.category];
     if (c.category === "restaurants" || c.category === "subscriptions") continue; // covered above
@@ -603,7 +612,7 @@ export function buildFallbackInsights(analysis: Analysis, locale: Locale): Insig
     weaknesses.push(t.w.fixedCosts({ amount: money(m.recurringFixed), share: pct(m.recurringFixed / m.monthlyIncome) }));
   }
   if (weaknesses.length === 0) {
-    const lever = m.spend.find((c) => !NO_CRITIQUE.includes(c.category) && c.category !== "housing" && c.category !== "insurance");
+    const lever = m.spend.find((c) => !c.oneOff && !NO_CRITIQUE.includes(c.category) && c.category !== "housing" && c.category !== "insurance");
     if (lever) weaknesses.push(t.w.biggestLever({ cat: label(lever.category), amount: money(lever.monthly) }));
   }
 
@@ -621,12 +630,21 @@ export function buildFallbackInsights(analysis: Analysis, locale: Locale): Insig
       const suggestion = t.suggestion[c.category] ?? t.suggestion.default;
       // Charged in only one month of a multi-month statement (a hotel stay, a flight):
       // spreading it over the period would invent a monthly cost, so show the total instead.
-      if (merchant && analysis.byMonth.length > 1 && merchant.months < 2 && merchant.total >= 10) {
+      if (merchant && isSingleMonth(merchant, analysis) && merchant.total >= 10) {
         const p = { merchant: merchant.name, merchantAmount: money(merchant.total), cat: label(c.category), share: pct(c.share) };
         return {
           title: t.critiqueTitleOnce({ target: merchant.name, amount: money(merchant.total) }),
           detail: t.critiqueDetailMerchantOnce(p),
           target: merchant.name,
+          category: c.category,
+          suggestion,
+        };
+      }
+      if (c.oneOff) {
+        return {
+          title: t.critiqueTitleOnce({ target: label(c.category), amount: money(c.total) }),
+          detail: t.critiqueDetailCat({ cat: label(c.category), share: pct(c.share) }),
+          target: label(c.category),
           category: c.category,
           suggestion,
         };
@@ -647,7 +665,8 @@ export function buildFallbackInsights(analysis: Analysis, locale: Locale): Insig
 
   // Saving options
   const savings: SavingOption[] = SAVING_RULES.map((rule) => {
-    const monthly = rule.key === "subscriptions" ? m.subscriptions : m.cat(rule.key).monthly;
+    // A saving "per month" only exists for spending that recurs, so single-month categories count as 0.
+    const monthly = rule.key === "subscriptions" ? m.subscriptions : m.regular(rule.key);
     if (monthly < rule.min) return null;
     const amount = roundTo5(monthly * rule.rate);
     return { title: t.saving[rule.key].title, detail: t.saving[rule.key].detail({ amount: money(amount) }), monthlySaving: amount, effort: rule.effort };
