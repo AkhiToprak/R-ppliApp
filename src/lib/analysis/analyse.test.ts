@@ -28,6 +28,17 @@ describe("analyse: totals", () => {
     expect(groceries?.count).toBe(2);
   });
 
+  it("counts the distinct months a category was booked in, ignoring refund-only months", () => {
+    const r = analyse([
+      tx("2026-07-14", -238.4, "travel", "easyJet"),
+      tx("2026-08-15", -420, "travel", "Hotel"),
+      tx("2026-08-31", -850, "taxes", "Steueramt"),
+      tx("2026-09-02", 50, "travel", "Hotel"),
+    ]);
+    expect(r.byCategory.find((c) => c.category === "travel")?.months).toBe(2);
+    expect(r.byCategory.find((c) => c.category === "taxes")?.months).toBe(1);
+  });
+
   it("floors refund-only categories at zero and omits them", () => {
     const r = analyse([tx("2026-01-01", 80, "shopping", "Zalando"), tx("2026-01-02", -10, "fees")]);
     expect(r.byCategory.find((c) => c.category === "shopping")).toBeUndefined();
@@ -149,7 +160,7 @@ describe("analyse: merchants and largest expenses", () => {
 
   it("groups by normalised counterparty with most common spelling", () => {
     expect(a.topMerchants[0].name).toBe("Kino Pathé Zürich"); // sorted desc by total
-    expect(a.topMerchants.find((m) => m.name === "Migros")).toEqual({ name: "Migros", total: 100, count: 3, category: "groceries" });
+    expect(a.topMerchants.find((m) => m.name === "Migros")).toEqual({ name: "Migros", total: 100, count: 3, months: 1, category: "groceries" });
   });
 
   it("falls back to the description cleaned of digits", () => {
@@ -157,6 +168,17 @@ describe("analyse: merchants and largest expenses", () => {
     expect(kino).toBeDefined();
     expect(kino?.count).toBe(2);
     expect(kino?.name).toBe("Kino Pathé Zürich");
+  });
+
+  it("counts the distinct months a merchant was charged in", () => {
+    const b = analyse([
+      tx("2026-01-03", -420, "travel", "Hotel Bairro Alto"),
+      tx("2026-01-05", -60, "groceries", "Migros"),
+      tx("2026-02-05", -60, "groceries", "Migros"),
+      tx("2026-02-20", -60, "groceries", "Migros"),
+    ]);
+    expect(b.topMerchants.find((m) => m.name === "Hotel Bairro Alto")?.months).toBe(1);
+    expect(b.topMerchants.find((m) => m.name === "Migros")?.months).toBe(2);
   });
 
   it("excludes savings and transfers and caps at 10", () => {

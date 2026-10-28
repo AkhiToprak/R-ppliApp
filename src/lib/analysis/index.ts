@@ -98,7 +98,7 @@ export function analyse(transactions: Transaction[]): Analysis {
   const months = Math.max(1, days / DAYS_PER_MONTH);
 
   // ---- accumulate ----
-  const catAcc = new Map<CategoryId, { net: number; count: number }>();
+  const catAcc = new Map<CategoryId, { net: number; count: number; months: Set<string> }>();
   const monthAcc = new Map<string, MonthAcc>();
   const weekday = [0, 0, 0, 0, 0, 0, 0];
 
@@ -106,9 +106,10 @@ export function analyse(transactions: Transaction[]): Analysis {
     const c = contribution(e);
     if (c === null) continue;
 
-    const acc = catAcc.get(e.cat) ?? { net: 0, count: 0 };
+    const acc = catAcc.get(e.cat) ?? { net: 0, count: 0, months: new Set<string>() };
     acc.net += c;
     acc.count += 1;
+    if (c > 0) acc.months.add(e.month);
     catAcc.set(e.cat, acc);
 
     const m = monthAcc.get(e.month) ?? { income: 0, saved: 0, cats: new Map() };
@@ -142,6 +143,7 @@ export function analyse(transactions: Transaction[]): Analysis {
       count: catAcc.get(cat)?.count ?? 0,
       share: isSpendingCategory(cat) && totalSpending > 0 ? round4(total / totalSpending) : 0,
       monthlyAverage: round2(total / months),
+      months: catAcc.get(cat)?.months.size ?? 0,
     });
   }
   byCategory.sort(

@@ -6,6 +6,7 @@ import { categoryLabel } from "@/lib/categories";
 import { formatMoney, formatPercent } from "@/lib/i18n/core";
 import {
   NON_SPENDING_CATEGORIES,
+  isSingleMonth,
   type Analysis,
   type CategoryId,
   type Critique,
@@ -73,6 +74,8 @@ interface Dict {
   critiqueTitle: Tpl; // target, amount
   critiqueDetailCat: Tpl; // cat, share
   critiqueDetailMerchant: Tpl; // merchant, merchantAmount, cat, share
+  critiqueTitleOnce: Tpl; // target, amount
+  critiqueDetailMerchantOnce: Tpl; // merchant, merchantAmount, cat, share
   suggestion: Partial<Record<CategoryId, string>> & { default: string };
   saving: Record<SavingKey, { title: string; detail: Tpl }>; // amount
 }
@@ -131,6 +134,8 @@ const de: Dict = {
   critiqueTitle: (p) => `${p.target}: ${p.amount} pro Monat`,
   critiqueDetailCat: (p) => `Auf ${p.cat} entfallen ${p.share} deiner Ausgaben.`,
   critiqueDetailMerchant: (p) => `Allein bei ${p.merchant} landen ${p.merchantAmount} pro Monat; insgesamt gehen ${p.share} deiner Ausgaben an ${p.cat}.`,
+  critiqueTitleOnce: (p) => `${p.target}: ${p.amount} einmalig`,
+  critiqueDetailMerchantOnce: (p) => `Bei ${p.merchant} hast du einmalig ${p.merchantAmount} ausgegeben – das ist kein monatlicher Posten. Insgesamt gehen ${p.share} deiner Ausgaben an ${p.cat}.`,
   suggestion: {
     groceries: "Basics bei Denner, Aldi oder Lidl bzw. als M-Budget/Prix Garantie kaufen, Cumulus-/Supercard-Aktionen nutzen und abends bei Too Good To Go reinschauen.",
     restaurants: "Zwei, drei Mittagessen pro Woche selbst mitnehmen und Lieferdienste zur Ausnahme machen.",
@@ -217,6 +222,8 @@ const fr: Dict = {
   critiqueTitle: (p) => `${p.target} : ${p.amount} par mois`,
   critiqueDetailCat: (p) => `${p.share} de tes dépenses vont à ${p.cat}.`,
   critiqueDetailMerchant: (p) => `Rien que chez ${p.merchant}, ${p.merchantAmount} par mois ; au total, ${p.share} de tes dépenses vont à ${p.cat}.`,
+  critiqueTitleOnce: (p) => `${p.target} : ${p.amount} en une fois`,
+  critiqueDetailMerchantOnce: (p) => `Chez ${p.merchant}, tu as dépensé ${p.merchantAmount} en une fois – ce n'est pas une dépense mensuelle. Au total, ${p.share} de tes dépenses vont à ${p.cat}.`,
   suggestion: {
     groceries: "Acheter les produits de base chez Denner, Aldi ou Lidl, ou en M-Budget/Prix Garantie, profiter des actions Cumulus/Supercard et passer par Too Good To Go le soir.",
     restaurants: "Emporter son lunch deux ou trois fois par semaine et garder la livraison pour les exceptions.",
@@ -303,6 +310,8 @@ const it: Dict = {
   critiqueTitle: (p) => `${p.target}: ${p.amount} al mese`,
   critiqueDetailCat: (p) => `Per ${p.cat} va il ${p.share} delle tue spese.`,
   critiqueDetailMerchant: (p) => `Solo da ${p.merchant} finiscono ${p.merchantAmount} al mese; in totale il ${p.share} delle tue spese va a ${p.cat}.`,
+  critiqueTitleOnce: (p) => `${p.target}: ${p.amount} una tantum`,
+  critiqueDetailMerchantOnce: (p) => `Da ${p.merchant} hai speso ${p.merchantAmount} una tantum – non è una spesa mensile. In totale il ${p.share} delle tue spese va a ${p.cat}.`,
   suggestion: {
     groceries: "Comprare i prodotti di base da Denner, Aldi o Lidl, o in M-Budget/Prix Garantie, sfruttare le azioni Cumulus/Supercard e passare la sera da Too Good To Go.",
     restaurants: "Portarsi il pranzo da casa due o tre volte a settimana e riservare le consegne alle eccezioni.",
@@ -389,6 +398,8 @@ const en: Dict = {
   critiqueTitle: (p) => `${p.target}: ${p.amount} per month`,
   critiqueDetailCat: (p) => `${p.cat} makes up ${p.share} of your spending.`,
   critiqueDetailMerchant: (p) => `${p.merchant} alone takes ${p.merchantAmount} a month; overall ${p.share} of your spending goes to ${p.cat}.`,
+  critiqueTitleOnce: (p) => `${p.target}: ${p.amount} one-off`,
+  critiqueDetailMerchantOnce: (p) => `You spent ${p.merchantAmount} at ${p.merchant} as a one-off – that's not a monthly cost. Overall ${p.share} of your spending goes to ${p.cat}.`,
   suggestion: {
     groceries: "Buy staples at Denner, Aldi or Lidl, or as M-Budget/Prix Garantie, use Cumulus/Supercard deals and check Too Good To Go in the evening.",
     restaurants: "Bring lunch from home two or three times a week and keep delivery for special occasions.",
@@ -429,6 +440,9 @@ interface CatStat {
   category: CategoryId;
   monthly: number;
   share: number;
+  total: number;
+  /** Only booked in one month: `monthly` is not a real monthly cost. */
+  oneOff: boolean;
 }
 
 function metrics(a: Analysis) {
@@ -440,9 +454,13 @@ function metrics(a: Analysis) {
       category: c.category,
       monthly: c.monthlyAverage > 0 ? c.monthlyAverage : c.total / months,
       share: c.share > 0 ? c.share : totalSpending > 0 ? c.total / totalSpending : 0,
+      total: c.total,
+      oneOff: isSingleMonth(c, a),
     }))
     .sort((x, y) => y.monthly - x.monthly);
-  const cat = (id: CategoryId): CatStat => spend.find((c) => c.category === id) ?? { category: id, monthly: 0, share: 0 };
+  const cat = (id: CategoryId): CatStat =>
+    spend.find((c) => c.category === id) ?? { category: id, monthly: 0, share: 0, total: 0, oneOff: false };
+  const regular = (id: CategoryId) => (cat(id).oneOff ? 0 : cat(id).monthly);
 
   const recurringSubs = a.recurring.filter((r) => r.category === "subscriptions").reduce((s, r) => s + r.monthlyCost, 0);
   const recurringFixed = a.recurring.filter((r) => !NON_SPENDING_CATEGORIES.includes(r.category)).reduce((s, r) => s + r.monthlyCost, 0);
@@ -455,7 +473,8 @@ function metrics(a: Analysis) {
     savingsRate: a.totalIncome > 0 && a.savingsRate !== null && Number.isFinite(a.savingsRate) ? a.savingsRate : null,
     spend,
     cat,
-    subscriptions: Math.max(cat("subscriptions").monthly, recurringSubs),
+    regular,
+    subscriptions: Math.max(regular("subscriptions"), recurringSubs),
     recurringFixed,
     hasData: a.transactionCount > 0 && (totalSpending > 0 || a.totalIncome > 0),
   };
@@ -539,8 +558,8 @@ export function buildFallbackInsights(analysis: Analysis, locale: Locale): Insig
   else if (rate !== null && rate > 0) strengths.push(t.s.positive({ rate: pct(rate), amount: money(m.monthlyIncome * rate) }));
   if (m.monthlySaved >= 20) strengths.push(t.s.activeSaving({ amount: money(m.monthlySaved) }));
   const restaurants = m.cat("restaurants");
-  if (m.monthlySpending > 0 && restaurants.share < 0.07) strengths.push(t.s.lowRestaurants({ amount: money(restaurants.monthly), share: pct(restaurants.share) }));
-  if (m.cat("car").monthly < 20 && m.cat("transport").monthly > 0) strengths.push(t.s.publicTransport({ amount: money(m.cat("transport").monthly) }));
+  if (m.monthlySpending > 0 && restaurants.share < 0.07 && !restaurants.oneOff) strengths.push(t.s.lowRestaurants({ amount: money(restaurants.monthly), share: pct(restaurants.share) }));
+  if (m.cat("car").monthly < 20 && m.regular("transport") > 0) strengths.push(t.s.publicTransport({ amount: money(m.cat("transport").monthly) }));
   if (m.subscriptions > 0 && m.subscriptions < 30) strengths.push(t.s.leanSubs({ amount: money(m.subscriptions) }));
   if (m.cat("fees").monthly < 2) strengths.push(t.s.lowFees);
   if (m.cat("cash").share < 0.05) strengths.push(t.s.lowCash);
@@ -558,11 +577,11 @@ export function buildFallbackInsights(analysis: Analysis, locale: Locale): Insig
   if (rate === null) weaknesses.push(t.w.noIncome);
   else if (rate < 0) weaknesses.push(t.w.negative({ amount: money(-rate * m.monthlyIncome) }));
   else if (rate < 0.1) weaknesses.push(t.w.thin({ rate: pct(rate) }));
-  if (restaurants.share > 0.12) weaknesses.push(t.w.restaurants({ amount: money(restaurants.monthly), share: pct(restaurants.share) }));
+  if (restaurants.share > 0.12 && !restaurants.oneOff) weaknesses.push(t.w.restaurants({ amount: money(restaurants.monthly), share: pct(restaurants.share) }));
   if (m.subscriptions > 50) weaknesses.push(t.w.subs({ amount: money(m.subscriptions) }));
-  if (m.cat("fees").monthly > 5) weaknesses.push(t.w.fees({ amount: money(m.cat("fees").monthly) }));
+  if (m.regular("fees") > 5) weaknesses.push(t.w.fees({ amount: money(m.regular("fees")) }));
   const cash = m.cat("cash");
-  if (cash.share > 0.1) weaknesses.push(t.w.cash({ amount: money(cash.monthly), share: pct(cash.share) }));
+  if (cash.share > 0.1 && !cash.oneOff) weaknesses.push(t.w.cash({ amount: money(cash.monthly), share: pct(cash.share) }));
   for (const c of m.spend.slice(0, 4)) {
     const range = TYPICAL_SHARE[c.category];
     if (c.category === "restaurants" || c.category === "subscriptions") continue; // covered above
@@ -575,7 +594,7 @@ export function buildFallbackInsights(analysis: Analysis, locale: Locale): Insig
     weaknesses.push(t.w.fixedCosts({ amount: money(m.recurringFixed), share: pct(m.recurringFixed / m.monthlyIncome) }));
   }
   if (weaknesses.length === 0) {
-    const lever = m.spend.find((c) => !NO_CRITIQUE.includes(c.category) && c.category !== "housing" && c.category !== "insurance");
+    const lever = m.spend.find((c) => !c.oneOff && !NO_CRITIQUE.includes(c.category) && c.category !== "housing" && c.category !== "insurance");
     if (lever) weaknesses.push(t.w.biggestLever({ cat: label(lever.category), amount: money(lever.monthly) }));
   }
 
@@ -588,8 +607,30 @@ export function buildFallbackInsights(analysis: Analysis, locale: Locale): Insig
     .filter((c) => !NO_CRITIQUE.includes(c.category) && c.monthly >= 20 && (c.category !== "housing" || above(c)))
     .sort((x, y) => Number(above(y)) - Number(above(x)) || y.monthly - x.monthly)
     .slice(0, 4)
-    .map((c) => {
+    .map((c): Critique => {
       const merchant = analysis.topMerchants.find((mt) => mt.category === c.category && mt.total > 0);
+      const suggestion = t.suggestion[c.category] ?? t.suggestion.default;
+      // Charged in only one month of a multi-month statement (a hotel stay, a flight):
+      // spreading it over the period would invent a monthly cost, so show the total instead.
+      if (merchant && isSingleMonth(merchant, analysis) && merchant.total >= 10) {
+        const p = { merchant: merchant.name, merchantAmount: money(merchant.total), cat: label(c.category), share: pct(c.share) };
+        return {
+          title: t.critiqueTitleOnce({ target: merchant.name, amount: money(merchant.total) }),
+          detail: t.critiqueDetailMerchantOnce(p),
+          target: merchant.name,
+          category: c.category,
+          suggestion,
+        };
+      }
+      if (c.oneOff) {
+        return {
+          title: t.critiqueTitleOnce({ target: label(c.category), amount: money(c.total) }),
+          detail: t.critiqueDetailCat({ cat: label(c.category), share: pct(c.share) }),
+          target: label(c.category),
+          category: c.category,
+          suggestion,
+        };
+      }
       const merchantMonthly = merchant ? merchant.total / m.months : 0;
       const useMerchant = merchant && merchantMonthly >= 10;
       return {
@@ -600,13 +641,14 @@ export function buildFallbackInsights(analysis: Analysis, locale: Locale): Insig
         target: useMerchant ? merchant.name : label(c.category),
         category: c.category,
         amount: Math.round(useMerchant ? merchantMonthly : c.monthly),
-        suggestion: t.suggestion[c.category] ?? t.suggestion.default,
+        suggestion,
       };
     });
 
   // Saving options
   const savings: SavingOption[] = SAVING_RULES.map((rule) => {
-    const monthly = rule.key === "subscriptions" ? m.subscriptions : m.cat(rule.key).monthly;
+    // A saving "per month" only exists for spending that recurs, so single-month categories count as 0.
+    const monthly = rule.key === "subscriptions" ? m.subscriptions : m.regular(rule.key);
     if (monthly < rule.min) return null;
     const amount = roundTo5(monthly * rule.rate);
     return { title: t.saving[rule.key].title, detail: t.saving[rule.key].detail({ amount: money(amount) }), monthlySaving: amount, effort: rule.effort };
