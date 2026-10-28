@@ -35,7 +35,6 @@ const TYPICAL_SHARE: Partial<Record<CategoryId, [number, number]>> = {
 const NO_CRITIQUE: readonly CategoryId[] = ["taxes", "children", "education", "savings", "transfers", "income", "other"];
 
 type Persona = "saver" | "solid" | "onTrack" | "epicure" | "subs" | "shopper" | "traveller" | "freeSpirit" | "detective" | "empty";
-type Verdict = "great" | "good" | "ok" | "negative" | "unknown";
 type SavingKey = "restaurants" | "groceries" | "subscriptions" | "telecom" | "insurance" | "shopping" | "fees" | "transport" | "leisure" | "car";
 
 type P = Record<string, string>;
@@ -44,12 +43,9 @@ type ItemTpl = (p: P) => InsightItem;
 
 interface Dict {
   perMonth: string;
-  emptySummary: string;
-  summaryFlow: Tpl; // income, spending, rate
-  summaryNoIncome: Tpl; // spending
-  summaryTop: Tpl; // cat, amount, share
-  verdict: Record<Verdict, string>;
   persona: Record<Persona, string>;
+  /** One general sentence describing each persona type. */
+  personaText: Record<Persona, string>;
   s: {
     highRate: ItemTpl; // rate, amount
     positive: ItemTpl; // rate, amount
@@ -83,18 +79,6 @@ interface Dict {
 
 const de: Dict = {
   perMonth: "pro Monat",
-  emptySummary:
-    "Für eine echte Auswertung hat es noch zu wenige Buchungen. Lade einen Kontoauszug über mindestens einen Monat hoch, dann gibt's konkrete Tipps.",
-  summaryFlow: (p) => `Im Schnitt kommen pro Monat ${p.income} rein und ${p.spending} gehen für den Alltag raus – das ergibt eine Sparquote von ${p.rate}.`,
-  summaryNoIncome: (p) => `Im Schnitt gibst du pro Monat ${p.spending} aus; Einnahmen sind im Auszug keine ersichtlich.`,
-  summaryTop: (p) => `Grösster Posten ist ${p.cat} mit ${p.amount} pro Monat (${p.share} der Ausgaben).`,
-  verdict: {
-    great: "Stark: Du lebst klar unter deinen Verhältnissen – weiter so.",
-    good: "Solide Basis, mit ein paar Handgriffen liegt noch mehr drin.",
-    ok: "Es geht auf, aber knapp – ein kleines Polster für Unvorhergesehenes wäre gut.",
-    negative: "Achtung: Du gibst mehr aus, als reinkommt – hier lohnt sich ein genauer Blick.",
-    unknown: "Ohne Lohneingang im Auszug konzentrieren wir uns auf die Ausgabenseite.",
-  },
   persona: {
     saver: "Sparfuchs",
     solid: "Budget-Profi",
@@ -106,6 +90,19 @@ const de: Dict = {
     freeSpirit: "Lebenskünstler",
     detective: "Ausgaben-Detektiv",
     empty: "Unbeschriebenes Blatt",
+  },
+  personaText: {
+    saver: "Du gibst weniger aus, als reinkommt, und legst regelmässig etwas zur Seite.",
+    solid: "Dein Budget ist gut im Griff: Die Rechnung geht auf, und es bleibt etwas übrig.",
+    onTrack: "Dein Budget geht auf – das Polster für Unvorhergesehenes darf aber noch wachsen.",
+    epicure: "Gutes Essen ist dir etwas wert: Restaurants und Take-away machen einen grossen Teil deiner Ausgaben aus.",
+    subs: "Streaming, Apps und Mitgliedschaften summieren sich bei dir zu einem stattlichen Abo-Posten.",
+    shopper: "Shopping nimmt bei dir einen grossen Teil der Ausgaben ein.",
+    traveller: "Reisen und Ferien sind dir wichtig und ein grosser Posten in deinem Budget.",
+    freeSpirit: "Du lebst im Moment: Zurzeit geht mehr raus, als reinkommt.",
+    detective: "Im Auszug sind keine Einnahmen zu sehen – darum schauen wir nur auf deine Ausgaben.",
+    empty:
+      "Für eine echte Auswertung hat es noch zu wenige Buchungen. Lade einen Kontoauszug über mindestens einen Monat hoch, dann gibt's konkrete Tipps.",
   },
   s: {
     highRate: (p) => ({ title: "Starke Sparquote", detail: `Du behältst ${p.rate} deines Einkommens – rund ${p.amount} pro Monat. Das ist ein richtig gutes Polster.` }),
@@ -168,18 +165,6 @@ const de: Dict = {
 
 const fr: Dict = {
   perMonth: "par mois",
-  emptySummary:
-    "Il y a encore trop peu de transactions pour une vraie analyse. Importe un relevé couvrant au moins un mois et tu recevras des conseils concrets.",
-  summaryFlow: (p) => `En moyenne, ${p.income} entrent chaque mois et ${p.spending} partent dans les dépenses courantes – soit un taux d'épargne de ${p.rate}.`,
-  summaryNoIncome: (p) => `En moyenne, tu dépenses ${p.spending} par mois ; aucun revenu n'apparaît sur le relevé.`,
-  summaryTop: (p) => `Le plus gros poste est ${p.cat} avec ${p.amount} par mois (${p.share} des dépenses).`,
-  verdict: {
-    great: "Bravo : tu vis nettement en dessous de tes moyens – continue comme ça.",
-    good: "Une base solide ; avec quelques ajustements, il y a encore de la marge.",
-    ok: "Ça passe, mais tout juste – un petit coussin pour les imprévus serait bienvenu.",
-    negative: "Attention : tu dépenses plus que ce qui rentre – ça vaut la peine d'y regarder de près.",
-    unknown: "Sans salaire visible sur le relevé, on se concentre sur les dépenses.",
-  },
   persona: {
     saver: "Fourmi prévoyante",
     solid: "Pro du budget",
@@ -191,6 +176,19 @@ const fr: Dict = {
     freeSpirit: "Cigale insouciante",
     detective: "Détective des dépenses",
     empty: "Page blanche",
+  },
+  personaText: {
+    saver: "Tu dépenses moins que ce qui rentre et tu mets régulièrement de l'argent de côté.",
+    solid: "Ton budget est bien tenu : les comptes tournent et il reste quelque chose.",
+    onTrack: "Ton budget tourne – mais le coussin pour les imprévus peut encore grandir.",
+    epicure: "La bonne table compte pour toi : restaurants et plats à l'emporter pèsent lourd dans tes dépenses.",
+    subs: "Streaming, apps et abonnements s'additionnent chez toi en un poste conséquent.",
+    shopper: "Le shopping occupe une grande part de tes dépenses.",
+    traveller: "Les voyages et les vacances comptent pour toi et pèsent lourd dans ton budget.",
+    freeSpirit: "Tu vis l'instant présent : en ce moment, il sort plus d'argent qu'il n'en rentre.",
+    detective: "Aucun revenu n'apparaît sur le relevé – on se concentre donc sur tes dépenses.",
+    empty:
+      "Il y a encore trop peu de transactions pour une vraie analyse. Importe un relevé couvrant au moins un mois et tu recevras des conseils concrets.",
   },
   s: {
     highRate: (p) => ({ title: "Excellent taux d'épargne", detail: `Tu gardes ${p.rate} de ton revenu – environ ${p.amount} par mois. Un très beau coussin.` }),
@@ -253,18 +251,6 @@ const fr: Dict = {
 
 const it: Dict = {
   perMonth: "al mese",
-  emptySummary:
-    "Ci sono ancora troppo poche transazioni per una vera analisi. Carica un estratto conto di almeno un mese e riceverai consigli concreti.",
-  summaryFlow: (p) => `In media entrano ${p.income} al mese e ${p.spending} se ne vanno per le spese correnti – un tasso di risparmio del ${p.rate}.`,
-  summaryNoIncome: (p) => `In media spendi ${p.spending} al mese; nell'estratto non risultano entrate.`,
-  summaryTop: (p) => `La voce più grande è ${p.cat} con ${p.amount} al mese (${p.share} delle spese).`,
-  verdict: {
-    great: "Ottimo: vivi chiaramente al di sotto delle tue possibilità – continua così.",
-    good: "Base solida; con qualche ritocco c'è ancora margine.",
-    ok: "I conti tornano, ma di poco – un piccolo cuscinetto per gli imprevisti sarebbe utile.",
-    negative: "Attenzione: spendi più di quanto entra – vale la pena guardare da vicino.",
-    unknown: "Senza stipendio visibile nell'estratto, ci concentriamo sulle spese.",
-  },
   persona: {
     saver: "Formica previdente",
     solid: "Mago del budget",
@@ -276,6 +262,19 @@ const it: Dict = {
     freeSpirit: "Cicala spensierata",
     detective: "Detective delle spese",
     empty: "Pagina bianca",
+  },
+  personaText: {
+    saver: "Spendi meno di quanto entra e metti regolarmente da parte qualcosa.",
+    solid: "Il tuo budget è sotto controllo: i conti tornano e qualcosa avanza.",
+    onTrack: "Il tuo budget regge – ma il cuscinetto per gli imprevisti può ancora crescere.",
+    epicure: "Il buon cibo per te conta: ristoranti e take-away sono una bella fetta delle tue spese.",
+    subs: "Streaming, app e abbonamenti si sommano in una voce di tutto rispetto.",
+    shopper: "Lo shopping occupa una grande parte delle tue spese.",
+    traveller: "Viaggi e vacanze sono importanti per te e pesano parecchio sul budget.",
+    freeSpirit: "Vivi alla giornata: in questo periodo esce più di quanto entra.",
+    detective: "Nell'estratto non risultano entrate – per questo guardiamo solo le spese.",
+    empty:
+      "Ci sono ancora troppo poche transazioni per una vera analisi. Carica un estratto conto di almeno un mese e riceverai consigli concreti.",
   },
   s: {
     highRate: (p) => ({ title: "Ottimo tasso di risparmio", detail: `Tieni da parte il ${p.rate} del tuo reddito – circa ${p.amount} al mese. Un bel cuscinetto.` }),
@@ -338,18 +337,6 @@ const it: Dict = {
 
 const en: Dict = {
   perMonth: "per month",
-  emptySummary:
-    "There aren't enough transactions yet for a proper analysis. Upload a statement covering at least one month and you'll get concrete tips.",
-  summaryFlow: (p) => `On average ${p.income} comes in each month and ${p.spending} goes out on everyday spending – a savings rate of ${p.rate}.`,
-  summaryNoIncome: (p) => `On average you spend ${p.spending} per month; no income shows up on the statement.`,
-  summaryTop: (p) => `Your biggest item is ${p.cat} at ${p.amount} per month (${p.share} of spending).`,
-  verdict: {
-    great: "Impressive: you're living well within your means – keep it up.",
-    good: "A solid base – a few tweaks would free up even more.",
-    ok: "It adds up, but only just – a small buffer for surprises would help.",
-    negative: "Heads-up: you're spending more than comes in – worth a closer look.",
-    unknown: "With no salary on the statement, we focus on the spending side.",
-  },
   persona: {
     saver: "Thrifty fox",
     solid: "Budget pro",
@@ -361,6 +348,19 @@ const en: Dict = {
     freeSpirit: "Free spirit",
     detective: "Spending detective",
     empty: "Blank slate",
+  },
+  personaText: {
+    saver: "You spend less than you earn and regularly put money aside.",
+    solid: "Your budget is under control: the numbers add up and there's something left over.",
+    onTrack: "Your budget works out – but your cushion for the unexpected could still grow.",
+    epicure: "Good food matters to you: restaurants and take-away make up a big share of your spending.",
+    subs: "Streaming, apps and memberships add up to a sizeable subscriptions bill.",
+    shopper: "Shopping takes up a big share of your spending.",
+    traveller: "Travel and holidays matter to you and are a big item in your budget.",
+    freeSpirit: "You live in the moment: right now more goes out than comes in.",
+    detective: "No income shows up on the statement, so we're looking at your spending only.",
+    empty:
+      "There aren't enough transactions yet for a proper analysis. Upload a statement covering at least one month and you'll get concrete tips.",
   },
   s: {
     highRate: (p) => ({ title: "Strong savings rate", detail: `You keep ${p.rate} of your income – about ${p.amount} a month. That's a really healthy cushion.` }),
@@ -480,14 +480,6 @@ export function fallbackScore(a: Analysis): number {
   return Math.round(Math.min(98, Math.max(5, s)));
 }
 
-function verdictOf(rate: number | null): Verdict {
-  if (rate === null) return "unknown";
-  if (rate >= 0.2) return "great";
-  if (rate >= 0.1) return "good";
-  if (rate >= 0) return "ok";
-  return "negative";
-}
-
 function personaOf(m: Metrics, score: number): Persona {
   const r = m.savingsRate;
   if (r !== null && r >= 0.2 && score >= 70) return "saver";
@@ -526,9 +518,9 @@ export function buildFallbackInsights(analysis: Analysis, locale: Locale): Insig
 
   if (!m.hasData) {
     return {
-      summary: t.emptySummary,
       score: 50,
       persona: t.persona.empty,
+      personaText: t.personaText.empty,
       strengths: [t.s.reviewing],
       weaknesses: [],
       critiques: [],
@@ -539,17 +531,7 @@ export function buildFallbackInsights(analysis: Analysis, locale: Locale): Insig
 
   const score = fallbackScore(analysis);
   const rate = m.savingsRate;
-  const top = m.spend[0];
-
-  // Summary
-  const parts: string[] = [];
-  parts.push(
-    rate !== null
-      ? t.summaryFlow({ income: money(m.monthlyIncome), spending: money(m.monthlySpending), rate: pct(rate) })
-      : t.summaryNoIncome({ spending: money(m.monthlySpending) }),
-  );
-  if (top) parts.push(t.summaryTop({ cat: label(top.category), amount: money(top.monthly), share: pct(top.share) }));
-  parts.push(t.verdict[verdictOf(rate)]);
+  const persona = personaOf(m, score);
 
   // Strengths
   const strengths: InsightItem[] = [];
@@ -634,9 +616,9 @@ export function buildFallbackInsights(analysis: Analysis, locale: Locale): Insig
     .slice(0, 5);
 
   return {
-    summary: parts.join(" "),
     score,
-    persona: t.persona[personaOf(m, score)],
+    persona: t.persona[persona],
+    personaText: t.personaText[persona],
     strengths: strengths.slice(0, 4),
     weaknesses: weaknesses.slice(0, 4),
     critiques,
