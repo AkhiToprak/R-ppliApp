@@ -34,13 +34,15 @@ export function getT<K extends string>(dict: MessageDict<K>, locale: Locale) {
 /** CHF formatting: `formatMoney(1234.5, "de")` → "CHF 1’234.50". */
 export function formatMoney(amount: number, locale: Locale, opts?: { decimals?: 0 | 2; currency?: string; sign?: boolean }) {
   const decimals = opts?.decimals ?? 2;
-  return new Intl.NumberFormat(INTL_LOCALE[locale], {
+  const formatted = new Intl.NumberFormat(INTL_LOCALE[locale], {
     style: "currency",
     currency: opts?.currency ?? "CHF",
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
-    signDisplay: opts?.sign ? "exceptZero" : "auto",
-  }).format(amount);
+  }).format(Math.abs(amount));
+  // Intl puts the sign between code and number ("CHF+1’932"); "+CHF 1’932" reads better.
+  const sign = amount < 0 ? "−" : opts?.sign && amount > 0 ? "+" : "";
+  return sign + formatted;
 }
 
 export function formatPercent(value: number, locale: Locale, decimals = 0) {

@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Räppli 🪙
 
-## Getting Started
+**Your budget, down to the last Rappen.** Upload a Swiss bank statement and get an instant breakdown of your spending: auto-categorised, charted and critiqued. No sign-up, nothing stored.
 
-First, run the development server:
+- **Formats:** CSV (UBS, PostFinance, Raiffeisen, ZKB, Kantonalbanken, Migros Bank, Revolut, neon, Yuh …), CAMT.053/054 XML, Excel, PDF
+- **Categorisation:** 300+ Swiss merchant rules (Migros → groceries, SBB → public transport, CSS → insurance …), with an LLM via OpenRouter for everything the rules don't know
+- **Insights:** budget score and persona, strengths and weaknesses, specific critique of spending points, and saving options with CHF estimates (LLM, with a rule-based fallback)
+- **Languages:** Deutsch, Français, Italiano, English, detected from the browser's `Accept-Language`
+- **Privacy:** parsing, categorisation rules and analysis run in the browser. Only anonymised merchant names and aggregated totals are sent to the LLM. There is no database, no cookies and no storage, so closing the tab erases everything.
+
+## Getting started
 
 ```bash
+npm install
+cp .env.example .env.local   # add your OpenRouter key
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000. You'll be redirected to `/de`, `/fr`, `/it` or `/en`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `OPENROUTER_API_KEY` | – | OpenRouter key. Without it the app still works using rules and fallback insights. |
+| `OPENROUTER_MODEL` | `google/gemini-2.5-flash-lite` | Any cheap model with JSON output |
+| `OPENROUTER_FALLBACK_MODELS` | – | Optional comma-separated fallback models |
+| `NEXT_PUBLIC_SITE_URL` | – | Sent as `HTTP-Referer` to OpenRouter |
+| `OPENROUTER_ALLOW_DATA_COLLECTION` | – | By default only providers that don't retain or train on data are used. Set it to `1` if your model has no such provider. |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scripts
 
-## Learn More
+- `npm run dev`: start the dev server
+- `npm run build` / `npm start`: production build
+- `npm test`: unit tests (vitest) for the parsers, categoriser, analysis and LLM layer
+- `npm run lint`: ESLint
 
-To learn more about Next.js, take a look at the following resources:
+## Architecture
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+  proxy.ts                 locale detection → /{de|fr|it|en}
+  app/[locale]/            landing page + /analyse (upload → processing → dashboard)
+  app/api/                 categorise · insights · extract (OpenRouter, stateless)
+  lib/parsers/             CSV / CAMT / XLSX / PDF → Transaction[]
+  lib/categorise/          Swiss merchant rules + LLM batching
+  lib/analysis/            totals, monthly trend, recurring payments, top merchants
+  lib/llm/                 OpenRouter client, prompts, zod schemas, fallback insights
+  lib/i18n/                dictionaries per feature, formatting (CHF, dates)
+  components/              brand (coin logo), site chrome, landing, analyse dashboard
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Räppli is not financial advice, just honest numbers.
