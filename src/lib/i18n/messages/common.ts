@@ -18,8 +18,6 @@ export const commonMessages = defineMessages({
     menuClose: "Menü schliessen",
     homeLink: "Räppli – zur Startseite",
     skipToContent: "Zum Inhalt springen",
-    footerDisclaimer: "Kein Finanzrat – nur ehrliche Zahlen.",
-    footerMade: "Mit Liebe und Rappenspalterei in der Schweiz gemacht.",
   },
   fr: {
     tagline: "Ton budget, au centime près",
@@ -38,8 +36,6 @@ export const commonMessages = defineMessages({
     menuClose: "Fermer le menu",
     homeLink: "Räppli – accueil",
     skipToContent: "Aller au contenu",
-    footerDisclaimer: "Pas de conseil financier – juste des chiffres honnêtes.",
-    footerMade: "Fait en Suisse, avec amour et au centime près.",
   },
   it: {
     tagline: "Il tuo budget, al centesimo",
@@ -58,8 +54,6 @@ export const commonMessages = defineMessages({
     menuClose: "Chiudi il menu",
     homeLink: "Räppli – home",
     skipToContent: "Vai al contenuto",
-    footerDisclaimer: "Nessuna consulenza finanziaria – solo cifre sincere.",
-    footerMade: "Fatto in Svizzera, con amore e al centesimo.",
   },
   en: {
     tagline: "Your budget, down to the last Rappen",
@@ -78,7 +72,5 @@ export const commonMessages = defineMessages({
     menuClose: "Close menu",
     homeLink: "Räppli – home",
     skipToContent: "Skip to content",
-    footerDisclaimer: "Not financial advice – just honest numbers.",
-    footerMade: "Made in Switzerland, with love and penny-pinching.",
   },
 });

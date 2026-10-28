@@ -35,7 +35,6 @@ export function PrivacySection({ locale, t }: { locale: Locale; t: LandingT }) {
             >
               {t("privacyTitle")}
             </h2>
-            <p className="mt-6 max-w-md text-xl leading-relaxed text-paper/70">{t("privacyLead")}</p>
           </Reveal>
           <div className="mt-20 lg:mt-24">
             <PrivacyLock />

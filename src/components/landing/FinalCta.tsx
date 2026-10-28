@@ -16,7 +16,6 @@ export function FinalCta({ locale, t }: { locale: Locale; t: LandingT }) {
           >
             {t("ctaTitle")}
           </h2>
-          <p className="mt-6 text-xl font-semibold sm:text-2xl">{t("ctaLead")}</p>
           <div className="mt-10 flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-center">
             <PillLink href={`/${locale}/analyse`} tone="ink">
               {t("ctaUpload")}

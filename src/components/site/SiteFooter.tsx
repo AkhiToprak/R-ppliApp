@@ -5,11 +5,10 @@ import { RappliLogo } from "@/components/brand/RappliCoin";
 import { useLocale, useT } from "@/lib/i18n/client";
 import { LOCALE_LABELS, LOCALES } from "@/lib/i18n/config";
 import { commonMessages } from "@/lib/i18n/messages/common";
-import { SwissFlag } from "./SwissFlag";
 
 const linkCls = "focus-ring rounded-md text-paper/70 transition-colors hover:text-paper";
 
-/** Ink footer: logo + tagline, links, language links, disclaimer. */
+/** Ink footer: logo + tagline, links, language links. */
 export function SiteFooter() {
   const locale = useLocale();
   const t = useT(commonMessages);
@@ -30,10 +29,6 @@ export function SiteFooter() {
             <RappliLogo size={44} invert />
           </Link>
           <p className="mt-6 font-display text-2xl leading-tight font-bold tracking-tight">{t("tagline")}</p>
-          <p className="mt-4 flex items-start gap-2 text-sm text-paper/60">
-            <SwissFlag className="mt-0.5 size-4 shrink-0" />
-            <span>{t("footerMade")}</span>
-          </p>
         </div>
 
         <nav aria-label={t("navMain")}>
@@ -68,8 +63,7 @@ export function SiteFooter() {
         </nav>
       </div>
 
-      <div className="mx-auto flex max-w-7xl flex-col gap-2 border-t border-paper/10 px-4 py-6 text-sm text-paper/55 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-        <p>{t("footerDisclaimer")}</p>
+      <div className="mx-auto max-w-7xl border-t border-paper/10 px-4 py-6 text-sm text-paper/55 sm:px-6 lg:px-8">
         <p>© 2026 Räppli</p>
       </div>
 

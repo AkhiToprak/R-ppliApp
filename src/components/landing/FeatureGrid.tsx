@@ -24,7 +24,7 @@ function Card({
   children,
 }: {
   title: string;
-  text: string;
+  text?: string;
   /** CSS colour mixed into white for a pastel background. */
   tint?: string;
   dark?: boolean;
@@ -45,7 +45,9 @@ function Card({
           <div className="flex flex-1 flex-col justify-center">{children}</div>
           <div>
             <h3 className="font-display text-2xl font-extrabold tracking-tight sm:text-[1.75rem]">{title}</h3>
-            <p className={clsx("mt-2 max-w-md leading-relaxed", dark ? "text-paper/70" : "text-ink/70")}>{text}</p>
+            {text && (
+              <p className={clsx("mt-2 max-w-md leading-relaxed", dark ? "text-paper/70" : "text-ink/70")}>{text}</p>
+            )}
           </div>
         </article>
       </TiltCard>
@@ -71,7 +73,6 @@ export function FeatureGrid({ locale, t }: { locale: Locale; t: LandingT }) {
             className="md:col-span-2 lg:col-span-4"
             tint="var(--color-sky)"
             title={t("fCatTitle")}
-            text={t("fCatText")}
           >
             <CategoriseIllo locale={locale} />
           </Card>
@@ -88,7 +89,6 @@ export function FeatureGrid({ locale, t }: { locale: Locale; t: LandingT }) {
             className="lg:col-span-3"
             tint="var(--color-violet)"
             title={t("fChartsTitle")}
-            text={t("fChartsText")}
           >
             <ChartsIllo locale={locale} />
           </Card>
@@ -101,7 +101,7 @@ export function FeatureGrid({ locale, t }: { locale: Locale; t: LandingT }) {
           >
             <CritiqueIllo quote={t("fCritiqueQuote")} />
           </Card>
-          <Card className="lg:col-span-2" tint="var(--color-sun)" title={t("fSwTitle")} text={t("fSwText")}>
+          <Card className="lg:col-span-2" tint="var(--color-sun)" title={t("fSwTitle")}>
             <StrengthsIllo
               strengths={[t("fSwStrength1"), t("fSwStrength2")]}
               weaknesses={[t("fSwWeak1"), t("fSwWeak2")]}
