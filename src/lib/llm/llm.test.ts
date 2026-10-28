@@ -77,9 +77,10 @@ function sampleAnalysis(over: Partial<Analysis> = {}): Analysis {
         count: 10,
         share: monthly / totalSpendingMonthly,
         monthlyAverage: monthly,
+        months: 3,
       })),
-      { category: "income" as const, total: income * months, count: 3, share: 0, monthlyAverage: income },
-      { category: "savings" as const, total: 1800, count: 3, share: 0, monthlyAverage: 600 },
+      { category: "income" as const, total: income * months, count: 3, share: 0, monthlyAverage: income, months: 3 },
+      { category: "savings" as const, total: 1800, count: 3, share: 0, monthlyAverage: 600, months: 3 },
     ],
     byMonth: [
       { month: "2025-01", income, spending: totalSpendingMonthly, saved: 600, byCategory: { groceries: 820 } },
@@ -301,7 +302,7 @@ describe("buildFallbackInsights", () => {
   it("shows a merchant charged in only one month as a one-off, not per month", () => {
     const base = sampleAnalysis();
     const a = sampleAnalysis({
-      byCategory: [...base.byCategory, { category: "travel", total: 4200, count: 1, share: 0.3, monthlyAverage: 1400 }],
+      byCategory: [...base.byCategory, { category: "travel", total: 4200, count: 1, share: 0.3, monthlyAverage: 1400, months: 1 }],
       topMerchants: [{ name: "Hotel Bairro Alto", category: "travel", total: 4200, count: 1, months: 1 }, ...base.topMerchants],
     });
     for (const locale of LOCALES) {
@@ -314,6 +315,31 @@ describe("buildFallbackInsights", () => {
     const prompt = insightsUserPrompt(a);
     expect(prompt).toContain("- Hotel Bairro Alto: 4200, one-off (not monthly)");
     expect(prompt).toContain("- Migros: 1500, 500/mo");
+  });
+
+  it("doesn't average a category booked in only one month", () => {
+    const base = sampleAnalysis();
+    const a = sampleAnalysis({
+      byCategory: [...base.byCategory, { category: "leisure", total: 3000, count: 1, share: 0.3, monthlyAverage: 1000, months: 1 }],
+      byMonth: base.byMonth.map((m, i) => (i === 1 ? { ...m, byCategory: { ...m.byCategory, leisure: 3000 } } : m)),
+    });
+    const regular = sampleAnalysis({
+      byCategory: [...base.byCategory, { category: "leisure", total: 3000, count: 9, share: 0.3, monthlyAverage: 1000, months: 3 }],
+    });
+    for (const locale of LOCALES) {
+      const i = buildFallbackInsights(a, locale);
+      const leisure = i.critiques.find((c) => c.category === "leisure");
+      expect(leisure).toBeDefined();
+      expect(leisure?.amount).toBeUndefined();
+      expect(leisure?.title).toMatch(/3.?000/);
+      expect(leisure?.title).not.toMatch(/1.?000/);
+      // A saving "per month" on a one-off would be made up; the same spend spread over 3 months gets one.
+      const leisureSaving = buildFallbackInsights(regular, locale).savings.find((s) => s.monthlySaving === 150);
+      expect(leisureSaving).toBeDefined();
+      expect(i.savings.map((s) => s.title)).not.toContain(leisureSaving?.title);
+    }
+    expect(insightsUserPrompt(a)).toContain("- leisure: 3000 in 2025-02 only (one-off, not monthly)");
+    expect(insightsUserPrompt(a)).toContain("- groceries: 820,");
   });
 
   it("the fixture passes the request schema", () => {
