@@ -64,7 +64,6 @@ export function FeatureGrid({ locale, t }: { locale: Locale; t: LandingT }) {
           >
             {t("featuresTitle")}
           </h2>
-          <p className="max-w-sm text-lg leading-relaxed text-muted lg:pb-3">{t("featuresLead")}</p>
         </Reveal>
 
         <div className="mt-14 grid gap-4 md:grid-cols-2 lg:mt-20 lg:grid-cols-6 lg:gap-5">

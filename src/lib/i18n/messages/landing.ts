@@ -43,7 +43,6 @@ export const landingMessages = defineMessages({
 
     // Features
     featuresTitle: "Alles, was dein Konto dir verschweigt.",
-    featuresLead: "Eine Datei rein, ein ehrlicher Blick auf dein Geld raus.",
     fCatTitle: "Automatisch kategorisiert",
     fCatText: "Jede Buchung landet in der richtigen Schublade – vom Wocheneinkauf bis zur Krankenkasse.",
     fChartsTitle: "Charts, die man versteht",
@@ -167,7 +166,6 @@ export const landingMessages = defineMessages({
       "Tu vois où part ton argent, tu reçois ton score budget et des idées concrètes pour économiser.",
 
     featuresTitle: "Tout ce que ton compte ne te dit pas.",
-    featuresLead: "Un fichier en entrée, un regard honnête sur ton argent en sortie.",
     fCatTitle: "Catégorisé automatiquement",
     fCatText: "Chaque transaction atterrit dans le bon tiroir – des courses de la semaine à la caisse maladie.",
     fChartsTitle: "Des graphiques clairs",
@@ -287,7 +285,6 @@ export const landingMessages = defineMessages({
       "Vedi dove vanno i tuoi soldi, ottieni il tuo punteggio budget e idee concrete per risparmiare.",
 
     featuresTitle: "Tutto quello che il tuo conto non ti dice.",
-    featuresLead: "Un file dentro, uno sguardo sincero sui tuoi soldi fuori.",
     fCatTitle: "Categorie automatiche",
     fCatText: "Ogni movimento finisce nel cassetto giusto – dalla spesa settimanale alla cassa malati.",
     fChartsTitle: "Grafici chiari",
@@ -407,7 +404,6 @@ export const landingMessages = defineMessages({
       "See where your money goes, get your budget score and concrete ideas on where to save.",
 
     featuresTitle: "Everything your account won't tell you.",
-    featuresLead: "One file in, an honest look at your money out.",
     fCatTitle: "Sorted automatically",
     fCatText: "Every transaction lands in the right drawer – from the weekly shop to health insurance.",
     fChartsTitle: "Charts that make sense",
