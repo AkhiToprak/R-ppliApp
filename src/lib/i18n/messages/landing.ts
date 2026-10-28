@@ -1,0 +1,503 @@
+import type { getT } from "../core";
+import { defineMessages } from "../core";
+
+// Landing page copy. German is the source; Swiss conventions ("ss", never "ß").
+// French uses a non-breaking space ( ) before ? ! : as is usual in fr-CH.
+export const landingMessages = defineMessages({
+  de: {
+    // Hero
+    heroTitle: "Wo sind all die Räppli hin?",
+    heroLead:
+      "Lade deinen Kontoauszug hoch und sieh in Sekunden, wohin dein Geld fliesst. Mit Budget-Score, ehrlicher Kritik und Spartipps – ganz ohne Login.",
+    ctaUpload: "Kontoauszug hochladen",
+    ctaSample: "Mit Beispieldaten testen",
+    badgeNoLogin: "Kein Login",
+    badgeNoStorage: "Nichts gespeichert",
+    badgeSwiss: "Made in Switzerland",
+    heroVisualLabel: "Vorschau: Räppli ordnet Händler automatisch Kategorien zu und zeigt eine Monatsübersicht.",
+
+    // Phone mockup
+    mockGreeting: "Hoi! Das war dein Oktober.",
+    mockSpent: "ausgegeben",
+    mockScore: "Budget-Score",
+    mockPersona: "Sparfuchs",
+    mockSaving: "Sparpotenzial",
+    mockPerMonth: "pro Monat",
+
+    // Merchants marquee
+    merchantsTitle: "Kennt deine Läden.",
+    merchantsLead:
+      "Von Migros bis Ochsner Sport: Schweizer Händler erkennt Räppli auf Anhieb. Alles andere ordnet die KI zu.",
+
+    // How it works
+    howTitle: "In drei Schritten zum Durchblick.",
+    step1Title: "Hochladen",
+    step1Text:
+      "Exportiere deinen Kontoauszug aus dem E-Banking und zieh die Datei rein. CSV, CAMT, Excel oder PDF – egal.",
+    step2Title: "Räppli sortiert",
+    step2Text:
+      "Migros wird Lebensmittel, SBB wird ÖV, Netflix wird Abo. Händler, die Räppli nicht kennt, ordnet die KI zu.",
+    step3Title: "Tipps erhalten",
+    step3Text:
+      "Du siehst, wohin dein Geld fliesst, bekommst deinen Budget-Score und konkrete Ideen, wo du sparen kannst.",
+
+    // Features
+    featuresTitle: "Alles, was dein Konto dir verschweigt.",
+    featuresLead: "Eine Datei rein, ein ehrlicher Blick auf dein Geld raus.",
+    fCatTitle: "Automatisch kategorisiert",
+    fCatText: "Jede Buchung landet in der richtigen Schublade – vom Wocheneinkauf bis zur Krankenkasse.",
+    fChartsTitle: "Charts, die man versteht",
+    fChartsText: "Monat für Monat, Kategorie für Kategorie. Ohne Tabellen-Kopfweh.",
+    fScoreTitle: "Budget-Score & Typ",
+    fScoreText: "Ein Wert von 0 bis 100 und ein Spar-Typ, der zu dir passt.",
+    fSwTitle: "Stärken & Schwächen",
+    fSwText: "Was du schon gut machst – und wo es noch klemmt.",
+    fSwStrength1: "Miete im grünen Bereich",
+    fSwStrength2: "Kaum Bankspesen",
+    fSwWeak1: "Viel Take-away",
+    fSwWeak2: "Drei Streaming-Abos",
+    fCritiqueTitle: "Ehrliche Kritik",
+    fCritiqueQuote: "CHF 186 bei Uber Eats im Monat? Da liegt mehr drin.",
+    fCritiqueText: "Räppli nennt Händler und Beträge beim Namen. Freundlich, aber ohne Ausreden.",
+    fSaveTitle: "Konkrete Sparoptionen",
+    fSaveText: "Mit Betrag pro Monat und wie viel Aufwand es dich kostet.",
+    fSave1: "Halbtax statt Einzeltickets",
+    fSave2: "Ein Streaming-Abo kündigen",
+    fSave3: "Zweimal pro Woche selber kochen",
+    effortEasy: "einfach",
+    effortMedium: "mittel",
+    fLangTitle: "Spricht deine Sprache",
+    fLangText: "Deutsch, Französisch, Italienisch und Englisch. Räppli merkt selbst, was du sprichst.",
+
+    // Privacy
+    privacyTitle: "Deine Daten bleiben bei dir.",
+    privacyLead: "Räppli hat kein Login, keine Datenbank und kein Gedächtnis. Mit Absicht.",
+    p1Title: "Läuft in deinem Browser",
+    p1Text: "Dein Kontoauszug wird direkt auf deinem Gerät gelesen und ausgewertet.",
+    p2Title: "Kein Konto",
+    p2Text: "Keine E-Mail, kein Passwort, kein Profil von dir.",
+    p3Title: "Keine Datenbank",
+    p3Text: "Wir speichern nichts. Es gibt schlicht keinen Ort dafür.",
+    p4Title: "Nur das Nötigste an die KI",
+    p4Text: "Anonymisierte Händlernamen und Summen – nie IBAN, Name oder Kontostand.",
+    p5Title: "Tab zu, alles weg",
+    p5Text: "Schliesst du das Fenster, ist deine Auswertung verschwunden.",
+    aiSeesTitle: "Was die KI zu sehen bekommt",
+    aiSeesSent: "geht an die KI",
+    aiSeesKept: "bleibt bei dir",
+    aiSeesName: "Dein Name",
+    aiSeesIban: "IBAN",
+    aiSeesBalance: "Kontostand",
+    aiSeesAddress: "Adresse",
+
+    // Banks & formats
+    banksTitle: "Funktioniert mit deiner Bank.",
+    banksLead:
+      "Exportiere den Kontoauszug aus dem E-Banking oder der App – Räppli erkennt das Format selbst.",
+    bankCantonal: "Kantonalbanken",
+    bankMore: "und viele mehr",
+    formatsTitle: "Diese Formate klappen",
+    fmtCsvText: "Der Klassiker aus jedem E-Banking.",
+    fmtCamtText: "Der Schweizer Bankstandard. Am genausten.",
+    fmtXlsxText: "Excel-Exporte, zum Beispiel aus Revolut.",
+    fmtPdfText: "Klappt auch – der Text wird vorher anonymisiert.",
+
+    // FAQ
+    faqTitle: "Fragen? Antworten.",
+    faq1Q: "Kostet Räppli etwas?",
+    faq1A: "Nein. Räppli ist gratis – kein Abo, kein Konto, keine versteckten Kosten.",
+    faq2Q: "Was wird gespeichert?",
+    faq2A:
+      "Nichts. Dein Kontoauszug wird in deinem Browser verarbeitet und nirgends abgelegt. Schliesst du den Tab, ist alles weg. Es gibt keine Datenbank und keine Benutzerkonten.",
+    faq3Q: "Welche Banken werden unterstützt?",
+    faq3A:
+      "Alle, die einen Export als CSV, CAMT.053 (XML), Excel oder PDF anbieten – also praktisch jede Schweizer Bank, dazu Revolut, neon und Yuh.",
+    faq4Q: "Wie genau ist die Kategorisierung?",
+    faq4A:
+      "Bekannte Schweizer Händler erkennt Räppli per Regel – das sitzt. Unbekannte ordnet die KI zu, und die liegt meistens richtig, aber nicht immer. Wirf deshalb einen kurzen Blick auf deine grössten Posten.",
+    faq5Q: "Welche KI steckt dahinter?",
+    faq5A:
+      "Ein grosses Sprachmodell hilft bei unbekannten Händlern und schreibt die Tipps. Es bekommt nur anonymisierte Händlernamen und Summen, nie deine IBAN, deinen Namen oder deinen Kontostand.",
+    faq6Q: "Wie exportiere ich meinen Kontoauszug?",
+    faq6A: "Meist im E-Banking unter Konto → Bewegungen → Export. Ein paar Wegweiser:",
+    exportUbs: "E-Banking → Konto → Transaktionen → Export als CSV",
+    exportPostfinance: "E-Finance → Konto → Bewegungen → Exportieren (CSV)",
+    exportRaiffeisen: "E-Banking → Kontobewegungen → Export als CSV oder CAMT",
+    exportZkb: "eBanking → Konto → Buchungen → Export",
+    exportRevolut: "App → Konto → Kontoauszug → Excel oder PDF",
+    exportNeonYuh: "App → Konto → Kontoauszug als PDF",
+    faq7Q: "Ist das eine Finanzberatung?",
+    faq7A:
+      "Nein. Räppli zeigt dir ehrliche Zahlen und Ideen – Entscheidungen über Anlagen, Kredite oder Vorsorge triffst du selbst oder mit einer Fachperson.",
+
+    // Final CTA
+    ctaTitle: "Zeit für einen Kassensturz.",
+    ctaLead: "Dauert keine Minute. Kostet keinen Rappen.",
+  },
+  fr: {
+    heroTitle: "Où sont passés tous mes centimes ?",
+    heroLead:
+      "Importe ton relevé bancaire et vois en quelques secondes où part ton argent. Avec score budget, critique honnête et astuces d'épargne – sans compte.",
+    ctaUpload: "Importer mon relevé",
+    ctaSample: "Tester avec un exemple",
+    badgeNoLogin: "Sans compte",
+    badgeNoStorage: "Rien n'est stocké",
+    badgeSwiss: "Made in Switzerland",
+    heroVisualLabel: "Aperçu : Räppli classe automatiquement les commerçants par catégorie et affiche un résumé mensuel.",
+
+    mockGreeting: "Salut ! Voici ton mois d'octobre.",
+    mockSpent: "dépensés",
+    mockScore: "Score budget",
+    mockPersona: "Écureuil malin",
+    mockSaving: "Potentiel d'épargne",
+    mockPerMonth: "par mois",
+
+    merchantsTitle: "Connaît tes magasins.",
+    merchantsLead:
+      "De la Migros à Ochsner Sport : Räppli reconnaît les commerçants suisses du premier coup. Pour le reste, l'IA s'en charge.",
+
+    howTitle: "Trois étapes, et tout devient clair.",
+    step1Title: "Importer",
+    step1Text:
+      "Exporte ton relevé depuis l'e-banking et glisse le fichier ici. CSV, CAMT, Excel ou PDF – peu importe.",
+    step2Title: "Räppli trie",
+    step2Text:
+      "La Migros devient alimentation, les CFF transports publics, Netflix abonnement. Les commerçants inconnus sont classés par l'IA.",
+    step3Title: "Recevoir des conseils",
+    step3Text:
+      "Tu vois où part ton argent, tu reçois ton score budget et des idées concrètes pour économiser.",
+
+    featuresTitle: "Tout ce que ton compte ne te dit pas.",
+    featuresLead: "Un fichier en entrée, un regard honnête sur ton argent en sortie.",
+    fCatTitle: "Catégorisé automatiquement",
+    fCatText: "Chaque transaction atterrit dans le bon tiroir – des courses de la semaine à la caisse maladie.",
+    fChartsTitle: "Des graphiques clairs",
+    fChartsText: "Mois par mois, catégorie par catégorie. Sans migraine de tableur.",
+    fScoreTitle: "Score budget & profil",
+    fScoreText: "Une note de 0 à 100 et un profil d'épargnant qui te ressemble.",
+    fSwTitle: "Forces & faiblesses",
+    fSwText: "Ce que tu fais déjà bien – et ce qui coince encore.",
+    fSwStrength1: "Loyer dans le vert",
+    fSwStrength2: "Presque pas de frais bancaires",
+    fSwWeak1: "Beaucoup de take-away",
+    fSwWeak2: "Trois abos streaming",
+    fCritiqueTitle: "Une critique honnête",
+    fCritiqueQuote: "CHF 186 par mois chez Uber Eats ? Tu peux faire mieux.",
+    fCritiqueText: "Räppli nomme les commerçants et les montants. Avec bienveillance, mais sans excuses.",
+    fSaveTitle: "Des pistes d'épargne concrètes",
+    fSaveText: "Avec le montant par mois et l'effort que ça te demande.",
+    fSave1: "Demi-tarif plutôt que billets simples",
+    fSave2: "Résilier un abo streaming",
+    fSave3: "Cuisiner deux fois par semaine",
+    effortEasy: "facile",
+    effortMedium: "moyen",
+    fLangTitle: "Parle ta langue",
+    fLangText: "Allemand, français, italien et anglais. Räppli détecte ta langue tout seul.",
+
+    privacyTitle: "Tes données restent chez toi.",
+    privacyLead: "Räppli n'a ni compte, ni base de données, ni mémoire. C'est voulu.",
+    p1Title: "Fonctionne dans ton navigateur",
+    p1Text: "Ton relevé est lu et analysé directement sur ton appareil.",
+    p2Title: "Pas de compte",
+    p2Text: "Pas d'e-mail, pas de mot de passe, pas de profil.",
+    p3Title: "Pas de base de données",
+    p3Text: "Nous ne stockons rien. Il n'y a tout simplement aucun endroit pour ça.",
+    p4Title: "Le strict minimum pour l'IA",
+    p4Text: "Des noms de commerçants anonymisés et des totaux – jamais d'IBAN, de nom ni de solde.",
+    p5Title: "Onglet fermé, tout disparaît",
+    p5Text: "Ferme la fenêtre et ton analyse s'efface.",
+    aiSeesTitle: "Ce que l'IA voit",
+    aiSeesSent: "envoyé à l'IA",
+    aiSeesKept: "reste chez toi",
+    aiSeesName: "Ton nom",
+    aiSeesIban: "IBAN",
+    aiSeesBalance: "Solde",
+    aiSeesAddress: "Adresse",
+
+    banksTitle: "Fonctionne avec ta banque.",
+    banksLead:
+      "Exporte ton relevé depuis l'e-banking ou l'app – Räppli reconnaît le format tout seul.",
+    bankCantonal: "Banques cantonales",
+    bankMore: "et bien d'autres",
+    formatsTitle: "Formats acceptés",
+    fmtCsvText: "Le classique de chaque e-banking.",
+    fmtCamtText: "La norme bancaire suisse. La plus précise.",
+    fmtXlsxText: "Exports Excel, par exemple de Revolut.",
+    fmtPdfText: "Ça marche aussi – le texte est anonymisé avant.",
+
+    faqTitle: "Des questions ? Des réponses.",
+    faq1Q: "Räppli est-il payant ?",
+    faq1A: "Non. Räppli est gratuit – pas d'abonnement, pas de compte, pas de frais cachés.",
+    faq2Q: "Qu'est-ce qui est stocké ?",
+    faq2A:
+      "Rien. Ton relevé est traité dans ton navigateur et n'est enregistré nulle part. Ferme l'onglet et tout disparaît. Il n'y a ni base de données ni comptes utilisateurs.",
+    faq3Q: "Quelles banques sont prises en charge ?",
+    faq3A:
+      "Toutes celles qui proposent un export CSV, CAMT.053 (XML), Excel ou PDF – donc pratiquement toutes les banques suisses, plus Revolut, neon et Yuh.",
+    faq4Q: "La catégorisation est-elle précise ?",
+    faq4A:
+      "Les commerçants suisses connus sont reconnus par des règles – c'est fiable. Les inconnus sont classés par l'IA, qui a généralement raison, mais pas toujours. Jette donc un œil à tes plus gros postes.",
+    faq5Q: "Quelle IA se cache derrière ?",
+    faq5A:
+      "Un grand modèle de langage aide pour les commerçants inconnus et rédige les conseils. Il ne reçoit que des noms de commerçants anonymisés et des totaux, jamais ton IBAN, ton nom ou ton solde.",
+    faq6Q: "Comment exporter mon relevé ?",
+    faq6A: "En général dans l'e-banking sous Compte → Mouvements → Exporter. Quelques repères :",
+    exportUbs: "E-Banking → Compte → Transactions → Export CSV",
+    exportPostfinance: "E-Finance → Compte → Mouvements → Exporter (CSV)",
+    exportRaiffeisen: "E-Banking → Mouvements → Export CSV ou CAMT",
+    exportZkb: "eBanking → Compte → Écritures → Export",
+    exportRevolut: "App → Compte → Relevé → Excel ou PDF",
+    exportNeonYuh: "App → Compte → Relevé en PDF",
+    faq7Q: "Est-ce du conseil financier ?",
+    faq7A:
+      "Non. Räppli te montre des chiffres honnêtes et des idées – les décisions sur les placements, crédits ou la prévoyance, tu les prends toi-même ou avec un·e spécialiste.",
+
+    ctaTitle: "C'est l'heure de faire les comptes.",
+    ctaLead: "Ça prend moins d'une minute. Et ça ne coûte pas un centime.",
+  },
+  it: {
+    heroTitle: "Dove sono finiti tutti i centesimi?",
+    heroLead:
+      "Carica il tuo estratto conto e scopri in pochi secondi dove vanno i tuoi soldi. Con punteggio budget, critica sincera e consigli di risparmio – senza login.",
+    ctaUpload: "Carica l'estratto conto",
+    ctaSample: "Prova con dati di esempio",
+    badgeNoLogin: "Nessun login",
+    badgeNoStorage: "Niente salvato",
+    badgeSwiss: "Made in Switzerland",
+    heroVisualLabel: "Anteprima: Räppli assegna automaticamente i commercianti alle categorie e mostra un riepilogo mensile.",
+
+    mockGreeting: "Ciao! Ecco il tuo ottobre.",
+    mockSpent: "spesi",
+    mockScore: "Punteggio budget",
+    mockPersona: "Volpe risparmiatrice",
+    mockSaving: "Potenziale di risparmio",
+    mockPerMonth: "al mese",
+
+    merchantsTitle: "Conosce i tuoi negozi.",
+    merchantsLead:
+      "Dalla Migros a Ochsner Sport: Räppli riconosce subito i commercianti svizzeri. Al resto pensa l'IA.",
+
+    howTitle: "Tre passi e vedi chiaro.",
+    step1Title: "Carica",
+    step1Text:
+      "Esporta l'estratto conto dall'e-banking e trascina qui il file. CSV, CAMT, Excel o PDF – fa lo stesso.",
+    step2Title: "Räppli ordina",
+    step2Text:
+      "Migros diventa spesa, FFS trasporti pubblici, Netflix abbonamento. I commercianti sconosciuti li assegna l'IA.",
+    step3Title: "Ricevi consigli",
+    step3Text:
+      "Vedi dove vanno i tuoi soldi, ottieni il tuo punteggio budget e idee concrete per risparmiare.",
+
+    featuresTitle: "Tutto quello che il tuo conto non ti dice.",
+    featuresLead: "Un file dentro, uno sguardo sincero sui tuoi soldi fuori.",
+    fCatTitle: "Categorie automatiche",
+    fCatText: "Ogni movimento finisce nel cassetto giusto – dalla spesa settimanale alla cassa malati.",
+    fChartsTitle: "Grafici chiari",
+    fChartsText: "Mese per mese, categoria per categoria. Senza mal di testa da tabelle.",
+    fScoreTitle: "Punteggio budget & profilo",
+    fScoreText: "Un valore da 0 a 100 e un profilo di risparmio fatto per te.",
+    fSwTitle: "Punti forti & deboli",
+    fSwText: "Cosa fai già bene – e dove c'è ancora da lavorare.",
+    fSwStrength1: "Affitto nella norma",
+    fSwStrength2: "Quasi nessuna spesa bancaria",
+    fSwWeak1: "Tanto take-away",
+    fSwWeak2: "Tre abbonamenti streaming",
+    fCritiqueTitle: "Critica sincera",
+    fCritiqueQuote: "CHF 186 al mese da Uber Eats? Si può fare di meglio.",
+    fCritiqueText: "Räppli chiama per nome commercianti e importi. Con gentilezza, ma senza scuse.",
+    fSaveTitle: "Risparmi concreti",
+    fSaveText: "Con l'importo mensile e quanto impegno richiede.",
+    fSave1: "Metà-prezzo invece dei biglietti singoli",
+    fSave2: "Disdire un abbonamento streaming",
+    fSave3: "Cucinare due volte a settimana",
+    effortEasy: "facile",
+    effortMedium: "medio",
+    fLangTitle: "Parla la tua lingua",
+    fLangText: "Tedesco, francese, italiano e inglese. Räppli capisce da solo che lingua parli.",
+
+    privacyTitle: "I tuoi dati restano tuoi.",
+    privacyLead: "Räppli non ha login, né database, né memoria. Di proposito.",
+    p1Title: "Funziona nel tuo browser",
+    p1Text: "L'estratto conto viene letto e analizzato direttamente sul tuo dispositivo.",
+    p2Title: "Nessun account",
+    p2Text: "Niente e-mail, niente password, nessun profilo.",
+    p3Title: "Nessun database",
+    p3Text: "Non salviamo nulla. Semplicemente non c'è un posto per farlo.",
+    p4Title: "All'IA solo lo stretto necessario",
+    p4Text: "Nomi dei commercianti anonimizzati e totali – mai IBAN, nome o saldo.",
+    p5Title: "Chiudi la scheda, tutto sparisce",
+    p5Text: "Chiudi la finestra e la tua analisi non c'è più.",
+    aiSeesTitle: "Cosa vede l'IA",
+    aiSeesSent: "va all'IA",
+    aiSeesKept: "resta a te",
+    aiSeesName: "Il tuo nome",
+    aiSeesIban: "IBAN",
+    aiSeesBalance: "Saldo",
+    aiSeesAddress: "Indirizzo",
+
+    banksTitle: "Funziona con la tua banca.",
+    banksLead:
+      "Esporta l'estratto conto dall'e-banking o dall'app – Räppli riconosce il formato da solo.",
+    bankCantonal: "Banche cantonali",
+    bankMore: "e molte altre",
+    formatsTitle: "Formati supportati",
+    fmtCsvText: "Il classico di ogni e-banking.",
+    fmtCamtText: "Lo standard bancario svizzero. Il più preciso.",
+    fmtXlsxText: "Export Excel, per esempio da Revolut.",
+    fmtPdfText: "Funziona anche – il testo viene prima anonimizzato.",
+
+    faqTitle: "Domande? Risposte.",
+    faq1Q: "Räppli costa qualcosa?",
+    faq1A: "No. Räppli è gratuito – nessun abbonamento, nessun account, nessun costo nascosto.",
+    faq2Q: "Cosa viene salvato?",
+    faq2A:
+      "Niente. L'estratto conto viene elaborato nel tuo browser e non viene archiviato da nessuna parte. Chiudi la scheda e tutto sparisce. Non ci sono database né account utente.",
+    faq3Q: "Quali banche sono supportate?",
+    faq3A:
+      "Tutte quelle che offrono un export CSV, CAMT.053 (XML), Excel o PDF – cioè praticamente ogni banca svizzera, più Revolut, neon e Yuh.",
+    faq4Q: "Quanto è precisa la categorizzazione?",
+    faq4A:
+      "I commercianti svizzeri noti vengono riconosciuti con regole fisse – e lì non si sbaglia. Quelli sconosciuti li assegna l'IA, che di solito ci azzecca, ma non sempre. Dai quindi un'occhiata alle voci più grandi.",
+    faq5Q: "Che IA c'è dietro?",
+    faq5A:
+      "Un grande modello linguistico aiuta con i commercianti sconosciuti e scrive i consigli. Riceve solo nomi dei commercianti anonimizzati e totali, mai il tuo IBAN, il tuo nome o il tuo saldo.",
+    faq6Q: "Come esporto il mio estratto conto?",
+    faq6A: "Di solito nell'e-banking sotto Conto → Movimenti → Esporta. Qualche indicazione:",
+    exportUbs: "E-Banking → Conto → Transazioni → Export CSV",
+    exportPostfinance: "E-Finance → Conto → Movimenti → Esporta (CSV)",
+    exportRaiffeisen: "E-Banking → Movimenti → Export CSV o CAMT",
+    exportZkb: "eBanking → Conto → Registrazioni → Export",
+    exportRevolut: "App → Conto → Estratto conto → Excel o PDF",
+    exportNeonYuh: "App → Conto → Estratto conto in PDF",
+    faq7Q: "È una consulenza finanziaria?",
+    faq7A:
+      "No. Räppli ti mostra cifre sincere e idee – le decisioni su investimenti, crediti o previdenza le prendi tu o con una persona esperta.",
+
+    ctaTitle: "È ora di fare i conti.",
+    ctaLead: "Ci vuole meno di un minuto. E non costa un centesimo.",
+  },
+  en: {
+    heroTitle: "Where did all the cents go?",
+    heroLead:
+      "Upload your bank statement and see where your money goes in seconds. With a budget score, honest critique and saving tips – no sign-up needed.",
+    ctaUpload: "Upload statement",
+    ctaSample: "Try with sample data",
+    badgeNoLogin: "No sign-up",
+    badgeNoStorage: "Nothing stored",
+    badgeSwiss: "Made in Switzerland",
+    heroVisualLabel: "Preview: Räppli sorts merchants into categories automatically and shows a monthly overview.",
+
+    mockGreeting: "Hoi! Here's your October.",
+    mockSpent: "spent",
+    mockScore: "Budget score",
+    mockPersona: "Savvy fox",
+    mockSaving: "Saving potential",
+    mockPerMonth: "per month",
+
+    merchantsTitle: "Knows your shops.",
+    merchantsLead:
+      "From Migros to Ochsner Sport: Räppli recognises Swiss merchants instantly. AI takes care of the rest.",
+
+    howTitle: "Three steps to clarity.",
+    step1Title: "Upload",
+    step1Text:
+      "Export your statement from e-banking and drop in the file. CSV, CAMT, Excel or PDF – whatever you've got.",
+    step2Title: "Räppli sorts",
+    step2Text:
+      "Migros becomes groceries, SBB public transport, Netflix a subscription. Merchants Räppli doesn't know are sorted by AI.",
+    step3Title: "Get tips",
+    step3Text:
+      "See where your money goes, get your budget score and concrete ideas on where to save.",
+
+    featuresTitle: "Everything your account won't tell you.",
+    featuresLead: "One file in, an honest look at your money out.",
+    fCatTitle: "Sorted automatically",
+    fCatText: "Every transaction lands in the right drawer – from the weekly shop to health insurance.",
+    fChartsTitle: "Charts that make sense",
+    fChartsText: "Month by month, category by category. No spreadsheet headaches.",
+    fScoreTitle: "Budget score & type",
+    fScoreText: "A score from 0 to 100 and a saver type that fits you.",
+    fSwTitle: "Strengths & weaknesses",
+    fSwText: "What you're already nailing – and where things pinch.",
+    fSwStrength1: "Rent in the green",
+    fSwStrength2: "Hardly any bank fees",
+    fSwWeak1: "Lots of take-away",
+    fSwWeak2: "Three streaming subs",
+    fCritiqueTitle: "Honest critique",
+    fCritiqueQuote: "CHF 186 a month on Uber Eats? You can do better.",
+    fCritiqueText: "Räppli names merchants and amounts. Friendly, but no excuses.",
+    fSaveTitle: "Concrete ways to save",
+    fSaveText: "With the amount per month and how much effort it takes.",
+    fSave1: "Half Fare card instead of single tickets",
+    fSave2: "Cancel one streaming sub",
+    fSave3: "Cook at home twice a week",
+    effortEasy: "easy",
+    effortMedium: "medium",
+    fLangTitle: "Speaks your language",
+    fLangText: "German, French, Italian and English. Räppli figures out which one you speak.",
+
+    privacyTitle: "Your data stays with you.",
+    privacyLead: "Räppli has no login, no database and no memory. On purpose.",
+    p1Title: "Runs in your browser",
+    p1Text: "Your statement is read and analysed right on your device.",
+    p2Title: "No account",
+    p2Text: "No email, no password, no profile of you.",
+    p3Title: "No database",
+    p3Text: "We don't store anything. There's simply nowhere to put it.",
+    p4Title: "Only the bare minimum goes to AI",
+    p4Text: "Anonymised merchant names and totals – never your IBAN, name or balance.",
+    p5Title: "Close the tab, it's gone",
+    p5Text: "Close the window and your analysis disappears.",
+    aiSeesTitle: "What the AI gets to see",
+    aiSeesSent: "sent to AI",
+    aiSeesKept: "stays with you",
+    aiSeesName: "Your name",
+    aiSeesIban: "IBAN",
+    aiSeesBalance: "Balance",
+    aiSeesAddress: "Address",
+
+    banksTitle: "Works with your bank.",
+    banksLead:
+      "Export your statement from e-banking or your app – Räppli detects the format on its own.",
+    bankCantonal: "Cantonal banks",
+    bankMore: "and many more",
+    formatsTitle: "Formats that work",
+    fmtCsvText: "The classic from every e-banking.",
+    fmtCamtText: "The Swiss banking standard. Most accurate.",
+    fmtXlsxText: "Excel exports, for example from Revolut.",
+    fmtPdfText: "Works too – the text is anonymised first.",
+
+    faqTitle: "Questions? Answers.",
+    faq1Q: "Does Räppli cost anything?",
+    faq1A: "No. Räppli is free – no subscription, no account, no hidden costs.",
+    faq2Q: "What gets stored?",
+    faq2A:
+      "Nothing. Your statement is processed in your browser and isn't saved anywhere. Close the tab and it's all gone. There's no database and no user accounts.",
+    faq3Q: "Which banks are supported?",
+    faq3A:
+      "Any bank that exports CSV, CAMT.053 (XML), Excel or PDF – so practically every Swiss bank, plus Revolut, neon and Yuh.",
+    faq4Q: "How accurate is the categorisation?",
+    faq4A:
+      "Well-known Swiss merchants are matched by rules – those are spot on. Unknown ones are sorted by AI, which is usually right, but not always. So take a quick look at your biggest items.",
+    faq5Q: "Which AI is behind it?",
+    faq5A:
+      "A large language model helps with unknown merchants and writes the tips. It only receives anonymised merchant names and totals, never your IBAN, name or balance.",
+    faq6Q: "How do I export my statement?",
+    faq6A: "Usually in e-banking under Account → Transactions → Export. A few pointers:",
+    exportUbs: "E-Banking → Account → Transactions → Export as CSV",
+    exportPostfinance: "E-Finance → Account → Transactions → Export (CSV)",
+    exportRaiffeisen: "E-Banking → Account movements → Export as CSV or CAMT",
+    exportZkb: "eBanking → Account → Bookings → Export",
+    exportRevolut: "App → Account → Statement → Excel or PDF",
+    exportNeonYuh: "App → Account → Statement as PDF",
+    faq7Q: "Is this financial advice?",
+    faq7A:
+      "No. Räppli shows you honest numbers and ideas – decisions about investments, loans or pensions are yours to make, on your own or with a professional.",
+
+    ctaTitle: "Time to count your Rappen.",
+    ctaLead: "Takes less than a minute. Costs not a single cent.",
+  },
+});
+
+export type LandingKey = keyof (typeof landingMessages)["de"];
+export type LandingT = ReturnType<typeof getT<LandingKey>>;

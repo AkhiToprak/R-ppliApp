@@ -88,3 +88,25 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---- Landing / site chrome additions (landing agent) ---------------------- */
+
+/* Visible, on-brand keyboard focus for links, buttons and summary elements. */
+@utility focus-ring {
+  &:focus-visible {
+    outline: 3px solid var(--color-coin);
+    outline-offset: 3px;
+  }
+}
+
+/* Fades the left/right edges of horizontally scrolling bands. */
+@utility mask-fade-x {
+  mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+}
+
+/* Dotted halftone texture, used sparingly behind comic-style elements. */
+@utility bg-halftone {
+  background-image: radial-gradient(currentColor 1.2px, transparent 1.3px);
+  background-size: 14px 14px;
+}
