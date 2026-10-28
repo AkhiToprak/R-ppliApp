@@ -4,6 +4,7 @@ import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } f
 import clsx from "clsx";
 import type { CategoryId, Locale } from "@/lib/types";
 import { CATEGORIES } from "@/lib/categories";
+import { CategoryIcon } from "@/components/analyse/ui";
 import { RappliCoin } from "@/components/brand/RappliCoin";
 import { PhoneMockup, type PhoneLabels } from "./PhoneMockup";
 
@@ -47,10 +48,10 @@ function FloatingChip({ chip, index, locale, scrollY }: { chip: Chip; index: num
           transition={{ duration: 3.6 + index * 0.45, repeat: Infinity, ease: "easeInOut", delay: index * 0.3 }}
         >
           <span
-            className="grid size-9 place-items-center rounded-full text-base"
+            className="grid size-9 place-items-center rounded-full text-ink"
             style={{ background: meta.color }}
           >
-            {meta.emoji}
+            <CategoryIcon id={chip.cat} size={18} />
           </span>
           <span className="leading-tight">
             <span className="block text-sm font-extrabold">{chip.merchant}</span>
