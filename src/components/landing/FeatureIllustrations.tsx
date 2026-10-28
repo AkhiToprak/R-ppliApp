@@ -257,19 +257,22 @@ const HELLOS = [
 ];
 
 export function LanguagesIllo({ locale }: { locale: Locale }) {
+  const ref = useRef<HTMLDivElement>(null);
+  // Only cycle while visible; an off-screen ticker would keep re-rendering and re-measuring.
+  const inView = useInView(ref);
   const reduce = useReducedMotion();
   const start = Math.max(0, HELLOS.findIndex((h) => h.lang === locale));
   const [i, setI] = useState(start);
 
   useEffect(() => {
-    if (reduce) return;
+    if (reduce || !inView) return;
     const id = window.setInterval(() => setI((n) => (n + 1) % HELLOS.length), 1900);
     return () => window.clearInterval(id);
-  }, [reduce]);
+  }, [reduce, inView]);
 
   const current = HELLOS[i];
   return (
-    <div aria-hidden>
+    <div ref={ref} aria-hidden>
       <div className="relative h-[4.5rem] overflow-hidden sm:h-20">
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.span
